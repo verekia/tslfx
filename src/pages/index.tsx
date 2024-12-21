@@ -1,12 +1,14 @@
 import Link from 'next/link'
 
 const IndexPage = () => (
-  <ul>
-    <li>
-      <Link href="/hello-world">Hello World</Link>
-      <Link href="/pulsing-ring">Pulsing Ring</Link>
-    </li>
-  </ul>
+  <div>
+    <h1>TSLFX</h1>
+    <ul>
+      <li>
+        <Link href="/pulsing-ring">Pulsing Ring</Link>
+      </li>
+    </ul>
+  </div>
 )
 
 export default IndexPage
