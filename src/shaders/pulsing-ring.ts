@@ -1,19 +1,60 @@
-import { mix, time, uniform, vec4, length, positionLocal, smoothstep, float } from 'three/tsl'
-import { UniformNode, Vector4 } from 'three/webgpu'
+import {
+  mix,
+  time,
+  uniform,
+  vec4,
+  length,
+  positionLocal,
+  smoothstep,
+  float,
+} from 'three/tsl'
+import type { UniformNode, Vector4 } from 'three/webgpu'
 
-export const pulsingRing = () => {
-  const pulsesPerGroup = uniform(3)
-  const delayBetweenGroups = uniform(2)
-  const speed = uniform(1)
-  const startColor = uniform(vec4(1, 0, 0, 1))
-  const endColor = uniform(vec4(0, 0, 1, 0))
-  const startThickness = uniform(0.07)
-  const endThickness = uniform(0.02)
-  const maxRadius = uniform(0.45)
-  const transitionStart = uniform(0.6)
-  const transitionDuration = uniform(0.3)
-  const innerSmoothness = uniform(0.01)
-  const outerSmoothness = uniform(0.01)
+type PulsingRingParams = {
+  pulsesPerGroup?: number
+  delayBetweenGroups?: number
+  speed?: number
+  startColor?: [number, number, number, number]
+  endColor?: [number, number, number, number]
+  startThickness?: number
+  endThickness?: number
+  maxRadius?: number
+  transitionStart?: number
+  transitionDuration?: number
+  innerSmoothness?: number
+  outerSmoothness?: number
+}
+
+const defaultParams: Required<PulsingRingParams> = {
+  pulsesPerGroup: 3,
+  delayBetweenGroups: 2,
+  speed: 1,
+  startColor: [1, 0, 0, 1],
+  endColor: [0, 0, 1, 0],
+  startThickness: 0.07,
+  endThickness: 0.02,
+  maxRadius: 0.45,
+  transitionStart: 0.6,
+  transitionDuration: 0.3,
+  innerSmoothness: 0.01,
+  outerSmoothness: 0.01,
+}
+
+export const pulsingRing = (params: PulsingRingParams = {}) => {
+  const p = { ...defaultParams, ...params }
+
+  const pulsesPerGroup = uniform(p.pulsesPerGroup)
+  const delayBetweenGroups = uniform(p.delayBetweenGroups)
+  const speed = uniform(p.speed)
+  const startColor = uniform(vec4(...p.startColor))
+  const endColor = uniform(vec4(...p.endColor))
+  const startThickness = uniform(p.startThickness)
+  const endThickness = uniform(p.endThickness)
+  const maxRadius = uniform(p.maxRadius)
+  const transitionStart = uniform(p.transitionStart)
+  const transitionDuration = uniform(p.transitionDuration)
+  const innerSmoothness = uniform(p.innerSmoothness)
+  const outerSmoothness = uniform(p.outerSmoothness)
 
   const totalCycleTime = pulsesPerGroup.add(delayBetweenGroups)
   const currentTime = time.mul(speed)

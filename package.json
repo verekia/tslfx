@@ -1,6 +1,6 @@
 {
   "name": "tslfx",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -9,6 +9,7 @@
     "start": "serve out",
     "lint": "next lint",
     "tsup": "tsup --tsconfig tsup.tsconfig.json",
+    "pub": "bun run tsup && npm publish",
     "prepare": "husky"
   },
   "tsup": {
