@@ -1,5 +1,5 @@
 import Canvas from '@/components/Canvas'
-import { pulsingRing } from '@/shaders/pulsing-ring'
+import { pulsingRing } from '@/shaders'
 import { useControls } from 'leva'
 import { useMemo } from 'react'
 

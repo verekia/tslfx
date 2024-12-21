@@ -1,5 +1,5 @@
 import Canvas from '@/components/Canvas'
-import gradient from '@/shaders/gradient'
+import { gradient } from '@/shaders'
 import { useControls } from 'leva'
 import { useMemo } from 'react'
 
