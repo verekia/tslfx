@@ -8,7 +8,8 @@ import {
   smoothstep,
   float,
 } from 'three/tsl'
-import type { UniformNode, Vector4 } from 'three/webgpu'
+import type { Vector4 } from 'three'
+import type { UniformNode } from 'three/webgpu'
 
 type PulsingRingParams = {
   pulsesPerGroup?: number
