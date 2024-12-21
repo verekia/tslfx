@@ -7,6 +7,9 @@ const IndexPage = () => (
       <li>
         <Link href="/pulsing-ring">Pulsing Ring</Link>
       </li>
+      <li>
+        <Link href="/gradient">Gradient</Link>
+      </li>
     </ul>
   </div>
 )

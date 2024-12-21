@@ -11,7 +11,8 @@ const MyCanvas = ({ children }: { children: React.ReactNode }) => {
     <Canvas
       style={{ height: '100vh' }}
       frameloop={frameloop}
-      gl={canvas => {
+      flat
+      gl={(canvas) => {
         const renderer = new WebGPURenderer({
           // @ts-expect-error whatever
           canvas,
