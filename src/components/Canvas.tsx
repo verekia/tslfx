@@ -9,7 +9,7 @@ const MyCanvas = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <Canvas
-      style={{ height: '100vh' }}
+      style={{ height: '100vh', background: '#ddf' }}
       frameloop={frameloop}
       flat
       gl={(canvas) => {

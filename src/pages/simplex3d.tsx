@@ -2,11 +2,21 @@ import Canvas from '@/components/Canvas'
 import { simplexNoise3D } from '@/shaders'
 import { useFrame } from '@react-three/fiber'
 import { useControls } from 'leva'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Vector4 } from 'three'
+import { MeshBasicNodeMaterial } from 'three/webgpu'
 
 const Scene = () => {
   const totalAnimationTime = useRef(0)
+  const materialRef = useRef<MeshBasicNodeMaterial>(null)
+
+  const { scale, speed, color1, color2, octaves } = useControls({
+    scale: { value: 10, min: 0, max: 100, step: 0.1 },
+    speed: { value: 1, min: -5, max: 5, step: 0.1 },
+    color1: { value: { r: 0, g: 0, b: 0, a: 1 } },
+    color2: { value: { r: 255, g: 255, b: 255, a: 1 } },
+    octaves: { value: 5, min: 0, max: 7, step: 1 },
+  })
 
   const simplex3DShader = useMemo(
     () =>
@@ -15,16 +25,16 @@ const Scene = () => {
         time: 0,
         color1: new Vector4(0, 0, 0, 1),
         color2: new Vector4(1, 1, 1, 1),
+        octaves,
       }),
-    []
+    [octaves]
   )
 
-  const { scale, speed, color1, color2 } = useControls({
-    scale: { value: 10, min: 0, max: 100, step: 0.1 },
-    speed: { value: 1, min: -3, max: 3, step: 0.1 },
-    color1: { value: { r: 0, g: 0, b: 0, a: 1 } },
-    color2: { value: { r: 255, g: 255, b: 255, a: 1 } },
-  })
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.needsUpdate = true
+    }
+  }, [octaves])
 
   useFrame((_, delta) => {
     totalAnimationTime.current += delta * speed
@@ -45,7 +55,11 @@ const Scene = () => {
   return (
     <mesh scale={5}>
       <planeGeometry />
-      <meshBasicNodeMaterial {...simplex3DShader.nodes} transparent />
+      <meshBasicNodeMaterial
+        ref={materialRef}
+        {...simplex3DShader.nodes}
+        transparent
+      />
     </mesh>
   )
 }
