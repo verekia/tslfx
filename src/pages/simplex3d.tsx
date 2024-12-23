@@ -32,8 +32,6 @@ const Scene = () => {
     simplex3DShader.uniforms.time.value = totalAnimationTime.current
   })
 
-  console.log(simplex3DShader.uniforms.color1.value)
-
   simplex3DShader.uniforms.scale.value = scale
   simplex3DShader.uniforms.color1.value.x = color1.r / 255
   simplex3DShader.uniforms.color1.value.y = color1.g / 255
