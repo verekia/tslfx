@@ -28,6 +28,7 @@ const Scene = () => {
 
   useFrame((_, delta) => {
     totalAnimationTime.current += delta * speed
+    // @ts-expect-error
     simplex3DShader.uniforms.time.value = totalAnimationTime.current
   })
 
