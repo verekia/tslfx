@@ -10,6 +10,11 @@ const IndexPage = () => (
       <li>
         <Link href="/gradient">Gradient</Link>
       </li>
+      <li>
+        <Link href="/simplex3d">
+          WIP - Simplex 3D (for an animated 2D surface)
+        </Link>
+      </li>
     </ul>
   </div>
 )
