@@ -13,6 +13,9 @@ const IndexPage = () => (
       <li>
         <Link href="/simplex3d">Simplex 3D (to animate a 2D surface)</Link>
       </li>
+      <li>
+        <Link href="/water">Water (via MaterialX noise shader)</Link>
+      </li>
     </ul>
   </div>
 )
