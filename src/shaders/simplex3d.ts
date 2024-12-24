@@ -13,7 +13,7 @@ import {
   step,
   min,
   mix,
-  ShaderNodeObject,
+  type ShaderNodeObject,
 } from 'three/tsl'
 import { UniformNode } from 'three/webgpu'
 
