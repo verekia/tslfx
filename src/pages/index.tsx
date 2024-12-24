@@ -16,6 +16,9 @@ const IndexPage = () => (
       <li>
         <Link href="/water">Water (via MaterialX noise shader)</Link>
       </li>
+      <li>
+        <Link href="/simplex2d">Simplex 2D (static)</Link>
+      </li>
     </ul>
   </div>
 )
