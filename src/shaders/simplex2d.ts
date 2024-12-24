@@ -7,7 +7,7 @@ import {
   max,
   uv,
   select,
-  ShaderNodeObject,
+  type ShaderNodeObject,
   uniform,
   float,
 } from 'three/tsl'
