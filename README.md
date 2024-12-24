@@ -41,3 +41,34 @@ const App = () => {
   )
 }
 ```
+
+## Noise
+
+Some [MaterialX](https://materialx.org/)-based noises are directly [included in Three.js](https://github.com/mrdoob/three.js/blob/master/examples/webgpu_materialx_noise.html).
+
+For example, the following code creates a basic water-like effect using `mx_noise_vec3`:
+
+```js
+import { color, float, mix, mx_noise_vec3, time, uv, vec3 } from 'three/tsl'
+import { MeshBasicNodeMaterial } from 'three/webgpu'
+
+const blue = color('#3871ff')
+const lightBlue = color('#579dff')
+const scale = 8
+const speed = 0.5
+const space = uv().sub(0.5).mul(scale).add(0.5)
+
+const rawNoise = mx_noise_vec3(vec3(space, time.mul(speed))).xxx
+const adjustedNoise = float(0.5).add(float(0.5).mul(rawNoise))
+const colored = mix(blue, lightBlue, adjustedNoise)
+
+const colorNode = colored
+
+const material = new MeshBasicNodeMaterial()
+material.colorNode = colorNode
+```
+
+## Resources
+
+- [GLSL to TSL transpiler](https://threejs.org/examples/?q=webgpu#webgpu_tsl_transpiler)
+- [TSL examples](https://threejs.org/examples/?q=tsl)
