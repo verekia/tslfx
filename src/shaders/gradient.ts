@@ -39,11 +39,7 @@ export const gradient = (params: GradientParams = {}) => {
   )
 
   return {
-    uniforms: {
-      color1: color1 as unknown as UniformNode<Vector4>,
-      color2: color2 as unknown as UniformNode<Vector4>,
-      rotation: rotation as unknown as UniformNode<number>,
-    },
+    uniforms: { color1, color2, rotation },
     nodes: { colorNode },
   }
 }

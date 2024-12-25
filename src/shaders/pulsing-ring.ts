@@ -1,3 +1,4 @@
+import { Vector4 } from 'three'
 import {
   mix,
   time,
@@ -8,15 +9,13 @@ import {
   smoothstep,
   float,
 } from 'three/tsl'
-import type { Vector4 } from 'three'
-import type { UniformNode } from 'three/webgpu'
 
 type PulsingRingParams = {
   pulsesPerGroup?: number
   delayBetweenGroups?: number
   speed?: number
-  startColor?: [number, number, number, number]
-  endColor?: [number, number, number, number]
+  startColor?: Vector4
+  endColor?: Vector4
   startThickness?: number
   endThickness?: number
   maxRadius?: number
@@ -30,8 +29,8 @@ const defaultParams: Required<PulsingRingParams> = {
   pulsesPerGroup: 3,
   delayBetweenGroups: 2,
   speed: 1,
-  startColor: [1, 0, 0, 1],
-  endColor: [0, 0, 1, 0],
+  startColor: new Vector4(1, 0, 0, 1),
+  endColor: new Vector4(0, 0, 1, 0),
   startThickness: 0.07,
   endThickness: 0.02,
   maxRadius: 0.45,
@@ -47,8 +46,8 @@ export const pulsingRing = (params: PulsingRingParams = {}) => {
   const pulsesPerGroup = uniform(p.pulsesPerGroup)
   const delayBetweenGroups = uniform(p.delayBetweenGroups)
   const speed = uniform(p.speed)
-  const startColor = uniform(vec4(...p.startColor))
-  const endColor = uniform(vec4(...p.endColor))
+  const startColor = uniform(p.startColor)
+  const endColor = uniform(p.endColor)
   const startThickness = uniform(p.startThickness)
   const endThickness = uniform(p.endThickness)
   const maxRadius = uniform(p.maxRadius)
@@ -106,8 +105,8 @@ export const pulsingRing = (params: PulsingRingParams = {}) => {
       startThickness,
       endThickness,
       maxRadius,
-      startColor: startColor as unknown as UniformNode<Vector4>,
-      endColor: endColor as unknown as UniformNode<Vector4>,
+      startColor,
+      endColor,
       transitionStart,
       transitionDuration,
       innerSmoothness,

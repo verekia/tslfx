@@ -38,7 +38,6 @@ const Scene = () => {
 
   useFrame((_, delta) => {
     totalAnimationTime.current += delta * speed
-    // @ts-expect-error
     waterShader.uniforms.time.value = totalAnimationTime.current
   })
 

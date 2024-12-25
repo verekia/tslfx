@@ -132,7 +132,7 @@ export const simplexNoise3D = (params: SimplexNoise3DParams) => {
   const p = { ...defaultParams, ...params }
 
   const scale = uniform(p.scale)
-  const time = uniform(float(p.time))
+  const time = uniform(p.time)
   const color1 = uniform(p.color1)
   const color2 = uniform(p.color2)
 
@@ -164,12 +164,7 @@ export const simplexNoise3D = (params: SimplexNoise3DParams) => {
   )
 
   return {
-    uniforms: {
-      scale,
-      time,
-      color1: color1 as unknown as UniformNode<Vector4>,
-      color2: color2 as unknown as UniformNode<Vector4>,
-    },
+    uniforms: { scale, time, color1, color2 },
     nodes: { colorNode },
   }
 }
