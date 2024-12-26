@@ -19,6 +19,9 @@ const IndexPage = () => (
       <li>
         <Link href="/simplex2d">Simplex 2D (static)</Link>
       </li>
+      <li>
+        <Link href="/impact">Impact</Link>
+      </li>
     </ul>
   </div>
 )
