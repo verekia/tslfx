@@ -1,4 +1,11 @@
-import { uv, uniform, vec2, rotate, select, ShaderNodeObject } from 'three/tsl'
+import {
+  uv,
+  uniform,
+  vec2,
+  rotate,
+  select,
+  type ShaderNodeObject,
+} from 'three/tsl'
 import { Vector2 } from 'three'
 import { Node, RotateNode } from 'three/webgpu'
 

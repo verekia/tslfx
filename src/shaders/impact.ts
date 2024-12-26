@@ -3,14 +3,14 @@ import {
   vec4,
   uv,
   uniform,
-  ShaderNodeObject,
+  type ShaderNodeObject,
   vec2,
   float,
   rotate,
   PI,
   hash,
 } from 'three/tsl'
-import { UniformNode } from 'three/webgpu'
+import type { UniformNode } from 'three/webgpu'
 import { sdCircle } from './sdf/circle'
 import { sdVesica } from './sdf/vesica'
 
