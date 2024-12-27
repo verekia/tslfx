@@ -17,7 +17,7 @@ import { sdVesica } from './sdf/vesica'
 const premultiplyRgba = (color: ShaderNodeObject<UniformNode<Vector4>>) =>
   vec4(color.xyz.mul(color.w), color.w)
 
-type ImpactParams = {
+export type ImpactParams = {
   circleColor?: Vector4
   vesicaColor?: Vector4
   time?: number
