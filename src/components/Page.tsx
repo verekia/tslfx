@@ -19,7 +19,7 @@ const Page = ({
 
   return (
     <div className="h-screen bg-[#eee]">
-      <ul className="fixed top-0 left-0 z-50 flex gap-2 p-2 [&>*]:text-sm [&>*]:text-white [&>*]:bg-black [&>*]:rounded-md [&>*]:px-2 [&>*]:py-1 [&>*]:hover:bg-gray-800">
+      <ul className="fixed top-0 left-0 z-50 flex flex-wrap gap-2 p-2 [&>*]:text-sm [&>*]:text-white [&>*]:bg-black [&>*]:rounded-md [&>*]:px-2 [&>*]:py-1 [&>*]:hover:bg-gray-800">
         <Link href="/" className="content-center">
           <li>
             <svg
