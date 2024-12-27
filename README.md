@@ -1,4 +1,4 @@
-# 👻 TSLFX
+# ✨ TSLFX
 
 Very early-stage collection of VFX shaders for Three.js Shading Language (TSL).
 
