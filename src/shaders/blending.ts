@@ -1,138 +1,58 @@
-import { mix, type ShaderNodeObject, vec4 } from 'three/tsl'
+import { mix, type ShaderNodeObject } from 'three/tsl'
 import type { Node } from 'three/webgpu'
 
-type Layer = { colorNode: ShaderNodeObject<Node> }
-
-export const blend = (layers: Layer[]) => {
-  const [firstLayer, ...moreLayers] = layers
-
-  if (!firstLayer) {
-    console.error('No layers provided')
-    return null
-  }
-
-  return moreLayers.reduce(
-    (acc, layer) => mix(acc, layer.colorNode, layer.colorNode.a),
-    firstLayer.colorNode
-  )
+export const blend = (
+  firstNode: ShaderNodeObject<Node>,
+  ...moreNodes: ShaderNodeObject<Node>[]
+) => {
+  if (!firstNode) throw new Error('No layers provided')
+  return moreNodes.reduce((acc, node) => mix(acc, node, node.a), firstNode)
 }
 
 export const addBlend = (
-  layers: Layer[],
-  options: { alpha: boolean } = { alpha: false }
+  firstNode: ShaderNodeObject<Node>,
+  ...moreNodes: ShaderNodeObject<Node>[]
 ) => {
-  const [firstLayer, ...moreLayers] = layers
-
-  if (!firstLayer) {
-    console.error('No layers provided')
-    return null
-  }
-
-  return moreLayers.reduce(
-    (acc, layer) =>
-      options.alpha
-        ? acc.add(layer.colorNode)
-        : acc.add(vec4(layer.colorNode.xyz, 0)),
-    firstLayer.colorNode
-  )
+  if (!firstNode) throw new Error('No layers provided')
+  return moreNodes.reduce((acc, node) => acc.add(node), firstNode)
 }
 
 export const subBlend = (
-  layers: Layer[],
-  options: { alpha: boolean } = { alpha: false }
+  firstNode: ShaderNodeObject<Node>,
+  ...moreNodes: ShaderNodeObject<Node>[]
 ) => {
-  const [firstLayer, ...moreLayers] = layers
-
-  if (!firstLayer) {
-    console.error('No layers provided')
-    return null
-  }
-
-  return moreLayers.reduce(
-    (acc, layer) =>
-      options.alpha
-        ? acc.sub(layer.colorNode)
-        : acc.sub(vec4(layer.colorNode.xyz, 0)),
-    firstLayer.colorNode
-  )
+  if (!firstNode) throw new Error('No layers provided')
+  return moreNodes.reduce((acc, node) => acc.sub(node), firstNode)
 }
 
 export const mulBlend = (
-  layers: Layer[],
-  options: { alpha: boolean } = { alpha: false }
+  firstNode: ShaderNodeObject<Node>,
+  ...moreNodes: ShaderNodeObject<Node>[]
 ) => {
-  const [firstLayer, ...moreLayers] = layers
-
-  if (!firstLayer) {
-    console.error('No layers provided')
-    return null
-  }
-
-  return moreLayers.reduce(
-    (acc, layer) =>
-      options.alpha
-        ? acc.mul(layer.colorNode)
-        : acc.mul(vec4(layer.colorNode.xyz, 1)),
-    firstLayer.colorNode
-  )
+  if (!firstNode) throw new Error('No layers provided')
+  return moreNodes.reduce((acc, node) => acc.mul(node), firstNode)
 }
 
 export const divBlend = (
-  layers: Layer[],
-  options: { alpha: boolean } = { alpha: false }
+  firstNode: ShaderNodeObject<Node>,
+  ...moreNodes: ShaderNodeObject<Node>[]
 ) => {
-  const [firstLayer, ...moreLayers] = layers
-
-  if (!firstLayer) {
-    console.error('No layers provided')
-    return null
-  }
-
-  return moreLayers.reduce(
-    (acc, layer) =>
-      options.alpha
-        ? acc.div(layer.colorNode)
-        : acc.div(vec4(layer.colorNode.xyz, 1)),
-    firstLayer.colorNode
-  )
+  if (!firstNode) throw new Error('No layers provided')
+  return moreNodes.reduce((acc, node) => acc.div(node), firstNode)
 }
 
 export const maxBlend = (
-  layers: Layer[],
-  options: { alpha: boolean } = { alpha: false }
+  firstNode: ShaderNodeObject<Node>,
+  ...moreNodes: ShaderNodeObject<Node>[]
 ) => {
-  const [firstLayer, ...moreLayers] = layers
-
-  if (!firstLayer) {
-    console.error('No layers provided')
-    return null
-  }
-
-  return moreLayers.reduce(
-    (acc, layer) =>
-      options.alpha
-        ? acc.max(layer.colorNode)
-        : acc.max(vec4(layer.colorNode.xyz, 0)),
-    firstLayer.colorNode
-  )
+  if (!firstNode) throw new Error('No layers provided')
+  return moreNodes.reduce((acc, node) => acc.max(node), firstNode)
 }
 
 export const minBlend = (
-  layers: Layer[],
-  options: { alpha: boolean } = { alpha: false }
+  firstNode: ShaderNodeObject<Node>,
+  ...moreNodes: ShaderNodeObject<Node>[]
 ) => {
-  const [firstLayer, ...moreLayers] = layers
-
-  if (!firstLayer) {
-    console.error('No layers provided')
-    return null
-  }
-
-  return moreLayers.reduce(
-    (acc, layer) =>
-      options.alpha
-        ? acc.min(layer.colorNode)
-        : acc.min(vec4(layer.colorNode.xyz, 1)),
-    firstLayer.colorNode
-  )
+  if (!firstNode) throw new Error('No layers provided')
+  return moreNodes.reduce((acc, node) => acc.min(node), firstNode)
 }

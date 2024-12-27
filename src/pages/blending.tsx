@@ -5,7 +5,7 @@ import { useFrame } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
 import { MeshBasicNodeMaterial, Vector4 } from 'three/webgpu'
 
-const LayeringMaterial = () => {
+const BlendingMaterial = () => {
   const materialRef = useRef<MeshBasicNodeMaterial>(null)
 
   const { uniforms: impactUniforms, nodes: impactNodes } = useMemo(
@@ -52,7 +52,35 @@ const LayeringMaterial = () => {
     }
   })
 
-  const colorNode = blend([waterNodes, pulsingRingNodes, impactNodes])
+  const colorNode = blend(
+    waterNodes.colorNode,
+    pulsingRingNodes.colorNode,
+    impactNodes.colorNode
+  )
+
+  // const colorNode = addBlend(
+  //   waterNodes.colorNode,
+  //   vec4(pulsingRingNodes.colorNode.xyz, 0),
+  //   vec4(impactNodes.colorNode.xyz, 0)
+  // )
+
+  // const colorNode = subBlend(
+  //   waterNodes.colorNode,
+  //   vec4(pulsingRingNodes.colorNode.xyz, 0),
+  //   vec4(impactNodes.colorNode.xyz, 0)
+  // )
+
+  // const colorNode = maxBlend(
+  //   waterNodes.colorNode,
+  //   vec4(pulsingRingNodes.colorNode.xyz, 1),
+  //   vec4(impactNodes.colorNode.xyz, 1)
+  // )
+
+  // const colorNode = minBlend(
+  //   waterNodes.colorNode,
+  //   pulsingRingNodes.colorNode,
+  //   impactNodes.colorNode
+  // )
 
   return (
     <meshBasicNodeMaterial
@@ -63,10 +91,10 @@ const LayeringMaterial = () => {
   )
 }
 
-const LayeringPage = () => (
-  <Page title="Layering">
-    <LayeringMaterial />
+const BlendingPage = () => (
+  <Page title="Blending">
+    <BlendingMaterial />
   </Page>
 )
 
-export default LayeringPage
+export default BlendingPage
