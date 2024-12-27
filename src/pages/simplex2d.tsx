@@ -16,7 +16,7 @@ const Simplex2DMaterial = () => {
 }
 
 const Simplex2DPage = () => (
-  <Page levaProps={{ titleBar: { title: 'TSLFX: Simplex 2D', filter: false } }}>
+  <Page title="Simplex 2D">
     <Simplex2DMaterial />
   </Page>
 )

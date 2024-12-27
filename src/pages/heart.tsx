@@ -21,8 +21,9 @@ const colorNode = mix(bgColor, heartColor, heart)
 const HeartMaterial = () => <meshBasicNodeMaterial colorNode={colorNode} />
 
 const HeartPage = () => (
-  <Page levaProps={{ titleBar: { title: 'TSLFX: Heart', filter: false } }}>
+  <Page title="Heart">
     <HeartMaterial />
   </Page>
 )
+
 export default HeartPage

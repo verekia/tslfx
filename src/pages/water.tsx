@@ -61,7 +61,7 @@ const WaterMaterial = () => {
 }
 
 const WaterPage = () => (
-  <Page levaProps={{ titleBar: { title: 'TSLFX: Water', filter: false } }}>
+  <Page title="Water">
     <WaterMaterial />
   </Page>
 )

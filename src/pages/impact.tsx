@@ -192,12 +192,7 @@ const ImpactMaterial = () => {
 }
 
 const ImpactPage = () => (
-  <Page
-    levaProps={{
-      titleBar: { title: 'TSLFX: Impact', filter: false },
-      theme: { sizes: { rootWidth: '310px' } },
-    }}
-  >
+  <Page title="Impact" levaProps={{ theme: { sizes: { rootWidth: '310px' } } }}>
     <ImpactMaterial />
   </Page>
 )

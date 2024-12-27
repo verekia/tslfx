@@ -61,12 +61,7 @@ const Simplex3DMaterial = () => {
 }
 
 const Simplex3DPage = () => (
-  <Page
-    levaProps={{
-      titleBar: { title: 'TSLFX: Simplex 3D', filter: false },
-      theme: { sizes: { rootWidth: '310px' } },
-    }}
-  >
+  <Page title="Simplex 3D">
     <Simplex3DMaterial />
   </Page>
 )

@@ -26,8 +26,9 @@ const GradientMaterial = () => {
 }
 
 const GradientPage = () => (
-  <Page levaProps={{ titleBar: { title: 'TSLFX: Gradient', filter: false } }}>
+  <Page title="Gradient">
     <GradientMaterial />
   </Page>
 )
+
 export default GradientPage

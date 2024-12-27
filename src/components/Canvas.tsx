@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 
 import { WebGPURenderer } from 'three/webgpu'
-import { OrbitControls } from '@react-three/drei'
 
 const MyCanvas = ({ children }: { children: React.ReactNode }) => {
   const [frameloop, setFrameloop] = useState<'never' | 'always'>('never')
@@ -26,7 +25,6 @@ const MyCanvas = ({ children }: { children: React.ReactNode }) => {
         return renderer
       }}
     >
-      <OrbitControls />
       {children}
     </Canvas>
   )

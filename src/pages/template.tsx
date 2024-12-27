@@ -54,7 +54,7 @@ const TemplateMaterial = () => {
 }
 
 const TemplatePage = () => (
-  <Page levaProps={{ titleBar: { title: 'TSLFX: Template', filter: false } }}>
+  <Page title="Template">
     <TemplateMaterial />
   </Page>
 )

@@ -58,10 +58,8 @@ const PulsingRingMaterial = () => {
 
 const PulsingRingPage = () => (
   <Page
-    levaProps={{
-      titleBar: { title: 'TSLFX: Pulsing Ring', filter: false },
-      theme: { sizes: { rootWidth: '320px' } },
-    }}
+    title="Pulsing Ring"
+    levaProps={{ theme: { sizes: { rootWidth: '320px' } } }}
   >
     <PulsingRingMaterial />
   </Page>
