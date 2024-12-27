@@ -68,6 +68,9 @@ const Page = ({
           <Link href="/heart">
             <li>Heart</li>
           </Link>
+          <Link href="/layering">
+            <li>Layering</li>
+          </Link>
           <Link href="/template">
             <li>Template</li>
           </Link>
