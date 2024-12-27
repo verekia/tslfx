@@ -20,7 +20,6 @@ const premultiplyRgba = (color: ShaderNodeObject<UniformNode<Vector4>>) =>
 type ImpactParams = {
   circleColor?: Vector4
   vesicaColor?: Vector4
-  scale?: number
   time?: number
   aspect?: number
   rotation?: number
@@ -34,7 +33,6 @@ type ImpactParams = {
 
 const defaultParams: Required<ImpactParams> = {
   time: 0,
-  scale: 1,
   aspect: 1,
   rotation: 0,
   circleColor: new Vector4(0, 0, 0, 1),
@@ -51,7 +49,6 @@ export const impact = (params: ImpactParams) => {
   const par = { ...defaultParams, ...params }
 
   const t = uniform(par.time)
-  const s = uniform(par.scale)
   const a = uniform(par.aspect)
   const r = uniform(par.rotation)
   const cCol = uniform(par.circleColor)
@@ -62,14 +59,14 @@ export const impact = (params: ImpactParams) => {
   const cse = uniform(par.circleSizeEnd)
   const ct = uniform(par.circleThickness)
 
-  const p = uv().sub(0.5).mul(2).mul(s).mul(vec2(a, 1))
-  // const transparent = vec4(0, 0, 0, 0)
+  const p = uv().sub(0.5).mul(2).mul(vec2(a, 1))
 
   const radius = t.pow(0.5)
-  const circleSize = css.add(cse.sub(css).mul(radius)).sub(ct)
+  const thickness = ct.mul(0.5)
+  const circleSize = css.add(cse.sub(css).mul(radius)).sub(thickness)
   const circle = sdCircle(p, circleSize)
     .abs()
-    .step(ct)
+    .step(thickness)
     .toVec4()
     .mul(premultiplyRgba(cCol))
 
@@ -101,7 +98,6 @@ export const impact = (params: ImpactParams) => {
   return {
     uniforms: {
       time: t,
-      scale: s,
       aspect: a,
       rotation: r,
       circleColor: cCol,
