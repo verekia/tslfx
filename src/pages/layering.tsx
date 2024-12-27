@@ -1,9 +1,8 @@
 import Page from '@/components/Page'
-import { impact, pulsingRing } from '@/shaders'
+import { blend, impact, pulsingRing } from '@/shaders'
 import { water } from '@/shaders/water'
 import { useFrame } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
-import { mix } from 'three/tsl'
 import { MeshBasicNodeMaterial, Vector4 } from 'three/webgpu'
 
 const LayeringMaterial = () => {
@@ -53,21 +52,7 @@ const LayeringMaterial = () => {
     }
   })
 
-  let colorNode = waterNodes.colorNode
-
-  // Normal blending
-  colorNode = mix(
-    colorNode,
-    pulsingRingNodes.colorNode,
-    pulsingRingNodes.colorNode.a
-  )
-  colorNode = mix(colorNode, impactNodes.colorNode, impactNodes.colorNode.a)
-
-  // Additive blending
-  // const colorNode = waterNodes.colorNode.add(impactNodes.colorNode)
-
-  // Subtractive blending
-  // const colorNode = waterNodes.colorNode.sub(vec4(impactNodes.colorNode.xyz, 0))
+  const colorNode = blend([waterNodes, pulsingRingNodes, impactNodes])
 
   return (
     <meshBasicNodeMaterial
