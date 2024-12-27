@@ -1,29 +1,36 @@
+import Page from '@/components/Page'
+import Head from 'next/head'
 import Link from 'next/link'
 
 const IndexPage = () => (
-  <div>
-    <h1>TSLFX</h1>
-    <ul>
-      <li>
-        <Link href="/pulsing-ring">Pulsing Ring</Link>
-      </li>
-      <li>
-        <Link href="/gradient">Gradient</Link>
-      </li>
-      <li>
-        <Link href="/simplex3d">Simplex 3D (to animate a 2D surface)</Link>
-      </li>
-      <li>
-        <Link href="/water">Water (via MaterialX noise shader)</Link>
-      </li>
-      <li>
-        <Link href="/simplex2d">Simplex 2D (static)</Link>
-      </li>
-      <li>
-        <Link href="/impact">Impact</Link>
-      </li>
-    </ul>
-  </div>
+  <>
+    <Head>
+      <title>TSLFX | TSL VFX library</title>
+    </Head>
+    <Page />
+    <div className="fixed top-0 left-0 h-screen w-screen flex flex-col items-center justify-center gap-1">
+      <h1 className=" text-center text-5xl font-bold mb-3">✨ TSLFX ✨</h1>
+      <p className="text-center text-xl">
+        <Link
+          className="underline mb-3"
+          href="https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language"
+          target="_blank"
+        >
+          TSL
+        </Link>{' '}
+        VFX library
+      </p>
+      <p>
+        <Link
+          className="underline text-xl"
+          href="https://github.com/verekia/tslfx"
+          target="_blank"
+        >
+          GitHub
+        </Link>
+      </p>
+    </div>
+  </>
 )
 
 export default IndexPage

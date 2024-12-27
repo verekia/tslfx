@@ -1,4 +1,4 @@
-import Canvas from '@/components/Canvas'
+import Page from '@/components/Page'
 import { water } from '@/shaders/water'
 import { useFrame } from '@react-three/fiber'
 import { useControls } from 'leva'
@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { Vector4 } from 'three'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
 
-const Scene = () => {
+const WaterMaterial = () => {
   const totalAnimationTime = useRef(0)
   const materialRef = useRef<MeshBasicNodeMaterial>(null)
 
@@ -52,21 +52,18 @@ const Scene = () => {
   waterShader.uniforms.color2.value.w = color2.a
 
   return (
-    <mesh scale={5}>
-      <planeGeometry />
-      <meshBasicNodeMaterial
-        ref={materialRef}
-        {...waterShader.nodes}
-        transparent
-      />
-    </mesh>
+    <meshBasicNodeMaterial
+      ref={materialRef}
+      {...waterShader.nodes}
+      transparent
+    />
   )
 }
 
 const WaterPage = () => (
-  <Canvas>
-    <Scene />
-  </Canvas>
+  <Page levaProps={{ titleBar: { title: 'TSLFX: Water', filter: false } }}>
+    <WaterMaterial />
+  </Page>
 )
 
 export default WaterPage

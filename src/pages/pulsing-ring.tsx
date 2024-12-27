@@ -1,9 +1,9 @@
-import Canvas from '@/components/Canvas'
+import Page from '@/components/Page'
 import { pulsingRing } from '@/shaders'
 import { useControls } from 'leva'
 import { useMemo } from 'react'
 
-const Scene = () => {
+const PulsingRingMaterial = () => {
   const pulsingRingShader = useMemo(() => pulsingRing(), [])
 
   const {
@@ -53,18 +53,18 @@ const Scene = () => {
   pulsingRingShader.uniforms.innerSmoothness.value = innerSmoothness
   pulsingRingShader.uniforms.outerSmoothness.value = outerSmoothness
 
-  return (
-    <mesh scale={5}>
-      <planeGeometry />
-      <meshBasicNodeMaterial {...pulsingRingShader.nodes} transparent />
-    </mesh>
-  )
+  return <meshBasicNodeMaterial {...pulsingRingShader.nodes} transparent />
 }
 
 const PulsingRingPage = () => (
-  <Canvas>
-    <Scene />
-  </Canvas>
+  <Page
+    levaProps={{
+      titleBar: { title: 'TSLFX: Pulsing Ring', filter: false },
+      theme: { sizes: { rootWidth: '320px' } },
+    }}
+  >
+    <PulsingRingMaterial />
+  </Page>
 )
 
 export default PulsingRingPage

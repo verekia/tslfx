@@ -1,9 +1,9 @@
-import Canvas from '@/components/Canvas'
+import Page from '@/components/Page'
 import { gradient } from '@/shaders'
 import { useControls } from 'leva'
 import { useMemo } from 'react'
 
-const Scene = () => {
+const GradientMaterial = () => {
   const gradientShader = useMemo(() => gradient(), [])
 
   const { color1, color2, rotation } = useControls({
@@ -22,18 +22,12 @@ const Scene = () => {
   gradientShader.uniforms.color2.value.w = color2.a
   gradientShader.uniforms.rotation.value = rotation
 
-  return (
-    <mesh scale={5}>
-      <planeGeometry />
-      <meshBasicNodeMaterial {...gradientShader.nodes} transparent />
-    </mesh>
-  )
+  return <meshBasicNodeMaterial {...gradientShader.nodes} transparent />
 }
 
-const SimplexPage = () => (
-  <Canvas>
-    <Scene />
-  </Canvas>
+const GradientPage = () => (
+  <Page levaProps={{ titleBar: { title: 'TSLFX: Gradient', filter: false } }}>
+    <GradientMaterial />
+  </Page>
 )
-
-export default SimplexPage
+export default GradientPage

@@ -1,9 +1,9 @@
-import Canvas from '@/components/Canvas'
+import Page from '@/components/Page'
 import { simplexNoise2D } from '@/shaders/simplex2d'
 import { useControls } from 'leva'
 import { useMemo } from 'react'
 
-const Scene = () => {
+const Simplex2DMaterial = () => {
   const simplex2DShader = useMemo(() => simplexNoise2D({ scale: 20 }), [])
 
   const { scale } = useControls({
@@ -12,18 +12,13 @@ const Scene = () => {
 
   simplex2DShader.uniforms.scale.value = scale
 
-  return (
-    <mesh scale={5}>
-      <planeGeometry />
-      <meshBasicNodeMaterial {...simplex2DShader.nodes} />
-    </mesh>
-  )
+  return <meshBasicNodeMaterial {...simplex2DShader.nodes} />
 }
 
-const SimplexPage = () => (
-  <Canvas>
-    <Scene />
-  </Canvas>
+const Simplex2DPage = () => (
+  <Page levaProps={{ titleBar: { title: 'TSLFX: Simplex 2D', filter: false } }}>
+    <Simplex2DMaterial />
+  </Page>
 )
 
-export default SimplexPage
+export default Simplex2DPage

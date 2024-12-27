@@ -1,11 +1,8 @@
-import Canvas from '@/components/Canvas'
+import Page from '@/components/Page'
 import { sdHeart, template } from '@/shaders'
 import { useControls } from 'leva'
 import { useMemo } from 'react'
-// import { Vector2 } from 'three'
 import { vec2 } from 'three/tsl'
-
-const PLANE_SIZE = 7
 
 const defaultScale = 1
 const defaultTime = 0
@@ -16,7 +13,7 @@ const defaultOffsetY = 0
 const defaultTileSize = 1
 const defaultTiled = false
 
-const Scene = () => {
+const TemplateMaterial = () => {
   const { scale, time, aspect, rotation, offsetX, offsetY, tileSize, tiled } =
     useControls({
       scale: { value: defaultScale, min: 0.1, max: 10, step: 0.1 },
@@ -53,18 +50,13 @@ const Scene = () => {
   uniforms.tileSize.value = tileSize
   uniforms.tiled.value = tiled ? 1 : 0
 
-  return (
-    <mesh scale-x={PLANE_SIZE * aspect} scale-y={PLANE_SIZE}>
-      <planeGeometry />
-      <meshBasicNodeMaterial {...nodes} />
-    </mesh>
-  )
+  return <meshBasicNodeMaterial {...nodes} />
 }
 
 const TemplatePage = () => (
-  <Canvas>
-    <Scene />
-  </Canvas>
+  <Page levaProps={{ titleBar: { title: 'TSLFX: Template', filter: false } }}>
+    <TemplateMaterial />
+  </Page>
 )
 
 export default TemplatePage

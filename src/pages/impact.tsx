@@ -1,8 +1,8 @@
-import Canvas from '@/components/Canvas'
+import Page from '@/components/Page'
 import { impact } from '@/shaders'
 import { ImpactParams } from '@/shaders/impact'
 import { useFrame } from '@react-three/fiber'
-import { button, folder, Leva, useControls } from 'leva'
+import { button, folder, useControls } from 'leva'
 import { useEffect, useMemo, useRef } from 'react'
 import { Vector4 } from 'three'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
@@ -47,7 +47,7 @@ const impactPresets = [
 
 const defaultParams = impactPresets[0].params
 
-const Scene = () => {
+const ImpactMaterial = () => {
   const materialRef = useRef<MeshBasicNodeMaterial>(null)
 
   const [
@@ -92,7 +92,7 @@ const Scene = () => {
       Animation: folder({
         time: { value: 0, min: 0, max: 1, step: 0.01 },
         duration: { value: 0.5, min: 0, max: 3, step: 0.1 },
-        autoplay: { value: false },
+        autoplay: { value: true },
       }),
       Uniforms: folder({
         circleColor: {
@@ -188,30 +188,18 @@ const Scene = () => {
   uniforms.circleSizeEnd.value = circleSizeEnd
   uniforms.circleThickness.value = circleThickness
 
-  return (
-    <>
-      <mesh scale={5}>
-        <planeGeometry />
-        <meshBasicNodeMaterial ref={materialRef} {...nodes} transparent />
-      </mesh>
-      <mesh scale={5} position-z={-0.01}>
-        <planeGeometry />
-        <meshBasicNodeMaterial color="black" transparent opacity={0.03} />
-      </mesh>
-    </>
-  )
+  return <meshBasicNodeMaterial ref={materialRef} {...nodes} transparent />
 }
 
 const ImpactPage = () => (
-  <>
-    <Canvas>
-      <Scene />
-    </Canvas>
-    <Leva
-      titleBar={{ title: 'TSLFX: Impact', filter: false }}
-      theme={{ sizes: { rootWidth: '310px' } }}
-    />
-  </>
+  <Page
+    levaProps={{
+      titleBar: { title: 'TSLFX: Impact', filter: false },
+      theme: { sizes: { rootWidth: '310px' } },
+    }}
+  >
+    <ImpactMaterial />
+  </Page>
 )
 
 export default ImpactPage
