@@ -71,6 +71,9 @@ const Page = ({
           <Link href="/blending">
             <li>Blending</li>
           </Link>
+          <Link href="/shape">
+            <li>Shape</li>
+          </Link>
           <Link href="/template">
             <li>Template</li>
           </Link>
