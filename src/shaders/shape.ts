@@ -6,7 +6,8 @@ import {
   vec2,
   mix,
   vec4,
-  ShaderNodeObject,
+  type ShaderNodeObject,
+  rotate,
 } from 'three/tsl'
 import { sdCircle } from './sdf/circle'
 import { sdHeart } from './sdf/heart'
@@ -23,6 +24,8 @@ type ShapeParams = {
   time?: number
   duration?: number
   shape?: 0 | 1 | 2
+  rotation?: number
+  rotating?: boolean
 }
 
 const premultiplyRgba = (color: ShaderNodeObject<UniformNode<Vector4>>) =>
@@ -38,6 +41,8 @@ const defaultParams: Required<ShapeParams> = {
   time: 0,
   duration: 1,
   shape: 0,
+  rotation: 0,
+  rotating: true,
 }
 
 export const shape = (params?: ShapeParams) => {
@@ -52,6 +57,8 @@ export const shape = (params?: ShapeParams) => {
   const t = uniform(par.time)
   const sh = uniform(par.shape)
   const d = uniform(par.duration)
+  const r = uniform(par.rotation)
+  const isRot = uniform(par.rotating ? 1 : 0)
 
   const easedT = t //.pow(0.5)
 
@@ -68,14 +75,16 @@ export const shape = (params?: ShapeParams) => {
   // const size = startSize.add(endSize.sub(startSize).mul(radius)).sub(thickness)
 
   const p = uv().sub(0.5).mul(2)
+  const rotatedP = rotate(p, select(isRot, r.mul(t), r))
 
-  let shap = select(sh.equal(0), sdCircle(p, sizeMinusThickness), 0)
+  let shap = select(sh.equal(0), sdCircle(rotatedP, sizeMinusThickness), 0)
   shap = select(
     sh.equal(1),
-    sdHeart(p.div(sizeMinusThickness.mul(1.66667)).add(vec2(0, 0.59))),
+    sdHeart(rotatedP.div(sizeMinusThickness.mul(1.66667)).add(vec2(0, 0.59))),
     shap
   )
-  shap = select(sh.equal(2), sdVesica(p, sizeMinusThickness, 0.2), shap)
+  shap = select(sh.equal(2), sdVesica(rotatedP, sizeMinusThickness, 0.2), shap)
+
   // shap = shap.oneMinus()
 
   // const colorNode = shap //.abs().step(thickness).toVec4().mul(color)
@@ -93,6 +102,8 @@ export const shape = (params?: ShapeParams) => {
       time: t,
       shape: sh,
       duration: d,
+      rotation: r,
+      rotating: isRot,
     },
     nodes: { colorNode },
   }

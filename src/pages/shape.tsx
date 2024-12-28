@@ -2,8 +2,9 @@ import Page from '@/components/Page'
 import { shape } from '@/shaders/shape'
 import { useFrame } from '@react-three/fiber'
 import { folder, useControls } from 'leva'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { Vector4 } from 'three'
+import { MeshBasicNodeMaterial } from 'three/webgpu'
 
 const defaultStartSize = 0.2
 const defaultStartColor = new Vector4(0, 0, 1, 1)
@@ -12,9 +13,11 @@ const defaultEndSize = 1
 const defaultEndColor = new Vector4(1, 0, 0, 1)
 const defaultEndThickness = 0
 const defaultDuration = 1.5
+const defaultRotation = 0
+const defaultRotating = false
 
 const ShapeMaterial = () => {
-  const { uniforms, nodes } = useMemo(() => shape(), [])
+  const materialRef = useRef<MeshBasicNodeMaterial>(null)
 
   const [
     {
@@ -28,6 +31,8 @@ const ShapeMaterial = () => {
       duration,
       autoplay,
       shape: sh,
+      rotation,
+      rotating,
     },
     setControls,
   ] = useControls(() => ({
@@ -66,8 +71,23 @@ const ShapeMaterial = () => {
         step: 0.01,
       },
       endThickness: { value: defaultEndThickness, min: 0, max: 1, step: 0.01 },
+      rotation: {
+        value: defaultRotation,
+        min: -2 * Math.PI,
+        max: 2 * Math.PI,
+        step: 0.01,
+      },
+      rotating: { value: defaultRotating },
     }),
   }))
+
+  const { uniforms, nodes } = useMemo(() => shape(), [])
+
+  // useEffect(() => {
+  //   if (materialRef.current) {
+  //     materialRef.current.needsUpdate = true
+  //   }
+  // }, [continuousRotation])
 
   useFrame((_, delta) => {
     if (!autoplay) return
@@ -97,12 +117,14 @@ const ShapeMaterial = () => {
   uniforms.endThickness.value = endThickness
   uniforms.shape.value = sh as 0 | 1 | 2
   uniforms.time.value = time
+  uniforms.rotation.value = rotation
+  uniforms.rotating.value = rotating ? 1 : 0
 
-  return <meshBasicNodeMaterial {...nodes} transparent />
+  return <meshBasicNodeMaterial ref={materialRef} {...nodes} transparent />
 }
 
 const ShapePage = () => (
-  <Page title="Shape">
+  <Page title="Shape" levaProps={{ theme: { sizes: { rootWidth: '310px' } } }}>
     <ShapeMaterial />
   </Page>
 )
