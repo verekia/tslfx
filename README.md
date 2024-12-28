@@ -68,6 +68,36 @@ const material = new MeshBasicNodeMaterial()
 material.colorNode = colorNode
 ```
 
+## Combining effects
+
+A convenience `blend` helper function is provided to stack multiple layers on top of each other (normal [blend mode](https://en.wikipedia.org/wiki/Blend_modes)):
+
+```js
+import { blend } from 'tslfx'
+
+const colorNode = blend(effectA.colorNode, effectB.colorNode, effectC.colorNode)
+```
+
+It's the same as doing:
+
+```js
+import { mix } from 'three/tsl'
+
+let colorNode = effectA.colorNode
+colorNode = mix(colorNode, effectB.colorNode, effectB.a)
+colorNode = mix(colorNode, effectC.colorNode, effectC.a)
+```
+
+I haven't figured out a way to chain `mix` without reassigning or introducing extra variables, so `blend` helps keeping a single `const` and expression.
+
+If you want other types of blending, you can do additive, subtractive, maximum, minimum, etc, yourself:
+
+```js
+const colorNode = effectA.colorNode
+  .add(vec4(effectB.colorNode.xyz, 0))
+  .add(vec4(effectC.colorNode.xyz, 0))
+```
+
 ## Resources
 
 - [GLSL to TSL transpiler](https://threejs.org/examples/?q=webgpu#webgpu_tsl_transpiler)

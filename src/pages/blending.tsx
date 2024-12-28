@@ -58,30 +58,6 @@ const BlendingMaterial = () => {
     impactNodes.colorNode
   )
 
-  // const colorNode = addBlend(
-  //   waterNodes.colorNode,
-  //   vec4(pulsingRingNodes.colorNode.xyz, 0),
-  //   vec4(impactNodes.colorNode.xyz, 0)
-  // )
-
-  // const colorNode = subBlend(
-  //   waterNodes.colorNode,
-  //   vec4(pulsingRingNodes.colorNode.xyz, 0),
-  //   vec4(impactNodes.colorNode.xyz, 0)
-  // )
-
-  // const colorNode = maxBlend(
-  //   waterNodes.colorNode,
-  //   vec4(pulsingRingNodes.colorNode.xyz, 1),
-  //   vec4(impactNodes.colorNode.xyz, 1)
-  // )
-
-  // const colorNode = minBlend(
-  //   waterNodes.colorNode,
-  //   pulsingRingNodes.colorNode,
-  //   impactNodes.colorNode
-  // )
-
   return (
     <meshBasicNodeMaterial
       ref={materialRef}
