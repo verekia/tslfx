@@ -40,6 +40,7 @@ declare module '@react-three/fiber' {
 }
 ```
 
+> [!TIP]
 > I like to put these in an `extend.ts` file that I import in my main entry file (`_app.tsx` in Next.js for example).
 
 You can then use `meshBasicNodeMaterial` in your scene:
@@ -65,7 +66,7 @@ const ImpactVFX = () => {
 }
 ```
 
-> [!WARNING]
+> [!CAUTION]
 > You should **memoize any TSL logic** to not re-create nodes on every render.
 
 ## VFX
