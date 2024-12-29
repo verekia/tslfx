@@ -65,7 +65,8 @@ const ImpactVFX = () => {
 }
 ```
 
-⚠️: You should **memoize any TSL logic** to not re-create nodes on every render.
+> [!WARNING]
+> You should **memoize any TSL logic** to not re-create nodes on every render.
 
 ## VFX
 
