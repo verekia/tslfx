@@ -27,7 +27,7 @@ const animate = (delta: number) => {
 
 Somewhere top-level in your project, extend `MeshBasicNodeMaterial` and declare its type:
 
-```jsx
+```ts
 import { extend, type ThreeElement } from '@react-three/fiber'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
 
@@ -74,6 +74,7 @@ const ImpactVFX = () => {
 - 💥 [Impact](https://tslfx.v1v2.io/impact)
 - ⭕️ [Pulsing Ring](https://tslfx.v1v2.io/pulsing-ring)
 - 🌈 [Gradient](https://tslfx.v1v2.io/gradient)
+- 💧 [Water](https://tslfx.v1v2.io/water) (simplex noise)
 
 ## SDFs
 
