@@ -8,4 +8,4 @@ export * from './simplex3d'
 export * from './template'
 export * from './impact'
 
-export * from './blending'
+export * from './util'
