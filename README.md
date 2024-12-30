@@ -106,6 +106,8 @@ const colorNode = pipe(
 )
 ```
 
+`pipe` is really just a more readable `.reduce()` of the arguments, nothing fancy.
+
 ## Noise
 
 Some [MaterialX](https://materialx.org/)-based noises are directly [included in Three.js](https://github.com/mrdoob/three.js/blob/master/examples/webgpu_materialx_noise.html).

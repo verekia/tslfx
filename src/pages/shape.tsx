@@ -6,15 +6,23 @@ import { useMemo, useRef } from 'react'
 import { Vector4 } from 'three'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
 
-const defaultStartSize = 0.2
-const defaultStartColor = new Vector4(0, 0, 1, 1)
-const defaultStartThickness = 1
+const defaultStartColor = new Vector4(1, 0, 0, 1)
+const defaultStartSize = 0.4
+const defaultStartThickness = 0.4
+const defaultStartInnerFade = 0.8
+const defaultStartOuterFade = 0
+
+const defaultEndColor = new Vector4(1, 0.8, 0, 1)
 const defaultEndSize = 1
-const defaultEndColor = new Vector4(1, 0, 0, 1)
 const defaultEndThickness = 0
-const defaultDuration = 1.5
-const defaultRotation = 0
-const defaultRotating = false
+const defaultEndInnerFade = 0
+const defaultEndOuterFade = 0
+
+const defaultProportional = false
+const defaultDuration = 1.8
+
+// const defaultRotation = 0
+// const defaultRotating = false
 
 const ShapeMaterial = () => {
   const materialRef = useRef<MeshBasicNodeMaterial>(null)
@@ -27,12 +35,17 @@ const ShapeMaterial = () => {
       endSize,
       startThickness,
       endThickness,
+      startInnerFade,
+      endInnerFade,
+      startOuterFade,
+      endOuterFade,
       time,
       duration,
       autoplay,
-      shape: sh,
-      rotation,
-      rotating,
+      // shape: sh,
+      // rotation,
+      // rotating,
+      proportional,
     },
     setControls,
   ] = useControls(() => ({
@@ -50,6 +63,29 @@ const ShapeMaterial = () => {
           a: defaultStartColor.w,
         },
       },
+      // shape: {
+      //   options: { Circle: 0, Heart: 1, Vesica: 2 },
+      //   value: 0,
+      // },
+      startSize: { value: defaultStartSize, min: 0, max: 1, step: 0.01 },
+      startThickness: {
+        value: defaultStartThickness,
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+      startInnerFade: {
+        value: defaultStartInnerFade,
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+      startOuterFade: {
+        value: defaultStartOuterFade,
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
       endColor: {
         value: {
           r: defaultEndColor.x * 255,
@@ -58,26 +94,18 @@ const ShapeMaterial = () => {
           a: defaultEndColor.w,
         },
       },
-      startSize: { value: defaultStartSize, min: 0, max: 1, step: 0.01 },
       endSize: { value: defaultEndSize, min: 0, max: 1, step: 0.01 },
-      shape: {
-        options: { Circle: 0, Heart: 1, Vesica: 2 },
-        value: 0,
-      },
-      startThickness: {
-        value: defaultStartThickness,
-        min: 0,
-        max: 1,
-        step: 0.01,
-      },
       endThickness: { value: defaultEndThickness, min: 0, max: 1, step: 0.01 },
-      rotation: {
-        value: defaultRotation,
-        min: -2 * Math.PI,
-        max: 2 * Math.PI,
-        step: 0.01,
-      },
-      rotating: { value: defaultRotating },
+      endInnerFade: { value: defaultEndInnerFade, min: 0, max: 1, step: 0.01 },
+      endOuterFade: { value: defaultEndOuterFade, min: 0, max: 1, step: 0.01 },
+      // rotation: {
+      //   value: defaultRotation,
+      //   min: -2 * Math.PI,
+      //   max: 2 * Math.PI,
+      //   step: 0.01,
+      // },
+      // rotating: { value: defaultRotating },
+      proportional: { value: defaultProportional },
     }),
   }))
 
@@ -115,10 +143,15 @@ const ShapeMaterial = () => {
   uniforms.startThickness.value = startThickness
   uniforms.endSize.value = endSize
   uniforms.endThickness.value = endThickness
-  uniforms.shape.value = sh as 0 | 1 | 2
+  // uniforms.shape.value = sh as 0 | 1 | 2
   uniforms.time.value = time
-  uniforms.rotation.value = rotation
-  uniforms.rotating.value = rotating ? 1 : 0
+  // uniforms.rotation.value = rotation
+  // uniforms.rotating.value = rotating ? 1 : 0
+  uniforms.proportional.value = proportional ? 1 : 0
+  uniforms.startInnerFade.value = startInnerFade
+  uniforms.endInnerFade.value = endInnerFade
+  uniforms.startOuterFade.value = startOuterFade
+  uniforms.endOuterFade.value = endOuterFade
 
   return <meshBasicNodeMaterial ref={materialRef} {...nodes} transparent />
 }

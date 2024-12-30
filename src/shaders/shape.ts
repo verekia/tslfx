@@ -2,47 +2,55 @@ import { Vector4 } from 'three'
 import {
   uv,
   uniform,
-  select,
-  vec2,
   mix,
   vec4,
+  smoothstep,
+  float,
+  select,
   type ShaderNodeObject,
-  rotate,
 } from 'three/tsl'
 import { sdCircle } from './sdf/circle'
-import { sdHeart } from './sdf/heart'
-import { sdVesica } from './sdf/vesica'
-import { UniformNode } from 'three/webgpu'
+import { Node } from 'three/webgpu'
 
 type ShapeParams = {
   startSize?: number
   startColor?: Vector4
   startThickness?: number
+  startInnerSmoothness?: number
+  startOuterSmoothness?: number
   endSize?: number
   endColor?: Vector4
   endThickness?: number
+  endInnerSmoothness?: number
+  endOuterSmoothness?: number
   time?: number
   duration?: number
-  shape?: 0 | 1 | 2
-  rotation?: number
-  rotating?: boolean
+  // shape?: 0 | 1 | 2
+  // rotation?: number
+  // rotating?: boolean
+  proportional?: boolean
 }
 
-const premultiplyRgba = (color: ShaderNodeObject<UniformNode<Vector4>>) =>
+const multiplyRgbByAlpha = (color: ShaderNodeObject<Node>) =>
   vec4(color.xyz.mul(color.w), color.w)
 
 const defaultParams: Required<ShapeParams> = {
   startSize: 1,
   startColor: new Vector4(0, 0, 0, 1),
   startThickness: 0.2,
+  startInnerSmoothness: 0.01,
+  startOuterSmoothness: 0.01,
   endSize: 1,
   endColor: new Vector4(1, 1, 1, 1),
   endThickness: 0.2,
+  endInnerSmoothness: 0.01,
+  endOuterSmoothness: 0.01,
   time: 0,
   duration: 1,
-  shape: 0,
-  rotation: 0,
-  rotating: true,
+  // shape: 0,
+  // rotation: 0,
+  proportional: false,
+  // rotating: true,
 }
 
 export const shape = (params?: ShapeParams) => {
@@ -51,45 +59,55 @@ export const shape = (params?: ShapeParams) => {
   const startColor = uniform(par.startColor)
   const startSize = uniform(par.startSize)
   const startThickness = uniform(par.startThickness)
+  const startInnerFade = uniform(par.startInnerSmoothness)
+  const startOuterFade = uniform(par.startOuterSmoothness)
   const endColor = uniform(par.endColor)
   const endSize = uniform(par.endSize)
   const endThickness = uniform(par.endThickness)
+  const endInnerFade = uniform(par.endInnerSmoothness)
+  const endOuterFade = uniform(par.endOuterSmoothness)
   const t = uniform(par.time)
-  const sh = uniform(par.shape)
+  // const sh = uniform(par.shape)
   const d = uniform(par.duration)
-  const r = uniform(par.rotation)
-  const isRot = uniform(par.rotating ? 1 : 0)
+  // const r = uniform(par.rotation)
+  // const isRot = uniform(par.rotating ? 1 : 0)
+  const isProp = uniform(par.proportional ? 1 : 0)
+  const p = uv().sub(0.5)
 
-  const easedT = t //.pow(0.5)
+  const normStartThickness = startThickness.div(2)
+  const normEndThickness = endThickness.div(2)
+  const normStartInnerFade = startInnerFade.div(2)
+  const normEndInnerFade = endInnerFade.div(2)
+  const normStartOuterFade = startOuterFade.div(2)
+  const normEndOuterFade = endOuterFade.div(2)
+  const normStartSize = startSize.div(2)
+  const normEndSize = endSize.div(2)
 
-  const size = mix(startSize, endSize, easedT)
-  const color = mix(
-    premultiplyRgba(startColor),
-    premultiplyRgba(endColor),
-    easedT
+  const color = mix(startColor, endColor, t)
+  const size = mix(normStartSize, normEndSize, t)
+
+  const thickness = mix(normStartThickness, normEndThickness, t).mul(
+    select(isProp, size, float(1))
   )
-  const thickness = mix(startThickness, endThickness, easedT).mul(0.5).mul(size)
-
-  const sizeMinusThickness = size.sub(thickness)
-
-  // const size = startSize.add(endSize.sub(startSize).mul(radius)).sub(thickness)
-
-  const p = uv().sub(0.5).mul(2)
-  const rotatedP = rotate(p, select(isRot, r.mul(t), r))
-
-  let shap = select(sh.equal(0), sdCircle(rotatedP, sizeMinusThickness), 0)
-  shap = select(
-    sh.equal(1),
-    sdHeart(rotatedP.div(sizeMinusThickness.mul(1.66667)).add(vec2(0, 0.59))),
-    shap
+  const innerFade = mix(normStartInnerFade, normEndInnerFade, t).mul(
+    select(isProp, size, float(1))
   )
-  shap = select(sh.equal(2), sdVesica(rotatedP, sizeMinusThickness, 0.2), shap)
+  const outerFade = mix(normStartOuterFade, normEndOuterFade, t).mul(
+    select(isProp, size, float(1))
+  )
 
-  // shap = shap.oneMinus()
+  const innerRadius = size.sub(thickness)
 
-  // const colorNode = shap //.abs().step(thickness).toVec4().mul(color)
+  const dist = sdCircle(p, innerRadius)
 
-  const colorNode = shap.abs().step(thickness).toVec4().mul(color)
+  // Calculate opacity using smoothstep for both inner and outer edges
+  const innerEdge = smoothstep(float(0).sub(innerFade), float(0), dist)
+
+  const outerEdge = smoothstep(thickness.sub(outerFade), thickness, dist)
+
+  const opacity = innerEdge.sub(outerEdge).mul(color.w)
+
+  const colorNode = multiplyRgbByAlpha(vec4(color.xyz, opacity))
 
   return {
     uniforms: {
@@ -100,10 +118,15 @@ export const shape = (params?: ShapeParams) => {
       endSize,
       endThickness,
       time: t,
-      shape: sh,
+      // shape: sh,
       duration: d,
-      rotation: r,
-      rotating: isRot,
+      // rotation: r,
+      // rotating: isRot,
+      startInnerFade,
+      endInnerFade,
+      startOuterFade,
+      endOuterFade,
+      proportional: isProp,
     },
     nodes: { colorNode },
   }
