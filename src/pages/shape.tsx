@@ -3,7 +3,7 @@ import { shape } from '@/shaders/shape'
 import { useFrame } from '@react-three/fiber'
 import { folder, useControls } from 'leva'
 import { useMemo, useRef } from 'react'
-import { Vector4 } from 'three'
+import { Vector2, Vector4 } from 'three'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
 
 const defaultStartColor = new Vector4(1, 0, 0, 1)
@@ -17,6 +17,8 @@ const defaultEndSize = 1
 const defaultEndThickness = 0
 const defaultEndInnerFade = 0
 const defaultEndOuterFade = 0
+const defaultStartOffset = new Vector2(0, 0)
+const defaultEndOffset = new Vector2(0, 0)
 
 const defaultProportional = false
 const defaultDuration = 1.8
@@ -47,6 +49,10 @@ const ShapeMaterial = () => {
       // rotating,
       proportional,
       easing,
+      startOffsetX,
+      startOffsetY,
+      endOffsetX,
+      endOffsetY,
     },
     setControls,
   ] = useControls(() => ({
@@ -87,6 +93,18 @@ const ShapeMaterial = () => {
         max: 1,
         step: 0.01,
       },
+      startOffsetX: {
+        value: defaultStartOffset.x,
+        min: -1,
+        max: 1,
+        step: 0.01,
+      },
+      startOffsetY: {
+        value: defaultStartOffset.y,
+        min: -1,
+        max: 1,
+        step: 0.01,
+      },
       endColor: {
         value: {
           r: defaultEndColor.x * 255,
@@ -99,6 +117,8 @@ const ShapeMaterial = () => {
       endThickness: { value: defaultEndThickness, min: 0, max: 1, step: 0.01 },
       endInnerFade: { value: defaultEndInnerFade, min: 0, max: 1, step: 0.01 },
       endOuterFade: { value: defaultEndOuterFade, min: 0, max: 1, step: 0.01 },
+      endOffsetX: { value: defaultEndOffset.x, min: -1, max: 1, step: 0.01 },
+      endOffsetY: { value: defaultEndOffset.y, min: -1, max: 1, step: 0.01 },
       // rotation: {
       //   value: defaultRotation,
       //   min: -2 * Math.PI,
@@ -158,6 +178,10 @@ const ShapeMaterial = () => {
   uniforms.startOuterFade.value = startOuterFade
   uniforms.endOuterFade.value = endOuterFade
   uniforms.easing.value = easing as 0 | 1 | 2 | 3
+  uniforms.startOffset.value.x = startOffsetX
+  uniforms.startOffset.value.y = startOffsetY
+  uniforms.endOffset.value.x = endOffsetX
+  uniforms.endOffset.value.y = endOffsetY
 
   return <meshBasicNodeMaterial ref={materialRef} {...nodes} transparent />
 }

@@ -1,4 +1,4 @@
-import { float, pow, select, ShaderNodeObject } from 'three/tsl'
+import { float, pow, select, type ShaderNodeObject } from 'three/tsl'
 import { Node, UniformNode } from 'three/webgpu'
 
 export const linear = (

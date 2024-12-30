@@ -1,4 +1,4 @@
-import { Vector4 } from 'three'
+import { Vector2, Vector4 } from 'three'
 import {
   uv,
   uniform,
@@ -27,6 +27,8 @@ type ShapeParams = {
   time?: number
   duration?: number
   easing?: 0 | 1 | 2 | 3
+  startOffset?: Vector2
+  endOffset?: Vector2
   // shape?: 0 | 1 | 2
   // rotation?: number
   // rotating?: boolean
@@ -42,11 +44,13 @@ const defaultParams: Required<ShapeParams> = {
   startThickness: 0.2,
   startInnerSmoothness: 0.01,
   startOuterSmoothness: 0.01,
+  startOffset: new Vector2(0, 0),
   endSize: 1,
   endColor: new Vector4(1, 1, 1, 1),
   endThickness: 0.2,
   endInnerSmoothness: 0.01,
   endOuterSmoothness: 0.01,
+  endOffset: new Vector2(0, 0),
   time: 0,
   duration: 1,
   // shape: 0,
@@ -64,11 +68,15 @@ export const shape = (params?: ShapeParams) => {
   const startThickness = uniform(par.startThickness)
   const startInnerFade = uniform(par.startInnerSmoothness)
   const startOuterFade = uniform(par.startOuterSmoothness)
+  const startOffset = uniform(par.startOffset)
+
   const endColor = uniform(par.endColor)
   const endSize = uniform(par.endSize)
   const endThickness = uniform(par.endThickness)
   const endInnerFade = uniform(par.endInnerSmoothness)
   const endOuterFade = uniform(par.endOuterSmoothness)
+  const endOffset = uniform(par.endOffset)
+
   const t = uniform(par.time)
   // const sh = uniform(par.shape)
   const d = uniform(par.duration)
@@ -78,6 +86,7 @@ export const shape = (params?: ShapeParams) => {
   const easing = uniform(par.easing)
   const p = uv().sub(0.5)
 
+  // Actually the normalized ones are the parameters, these are on 0 - 0.5
   const normStartThickness = startThickness.div(2)
   const normEndThickness = endThickness.div(2)
   const normStartInnerFade = startInnerFade.div(2)
@@ -86,6 +95,8 @@ export const shape = (params?: ShapeParams) => {
   const normEndOuterFade = endOuterFade.div(2)
   const normStartSize = startSize.div(2)
   const normEndSize = endSize.div(2)
+  const normStartOffset = startOffset.div(2)
+  const normEndOffset = endOffset.div(2)
 
   const easedT = select(
     easing.equal(1),
@@ -109,10 +120,11 @@ export const shape = (params?: ShapeParams) => {
   const outerFade = mix(normStartOuterFade, normEndOuterFade, easedT).mul(
     select(isProp, size, float(1))
   )
+  const offset = mix(normStartOffset, normEndOffset, easedT)
 
   const innerRadius = size.sub(thickness)
 
-  const dist = sdCircle(p, innerRadius)
+  const dist = sdCircle(p.add(offset.mul(-1)), innerRadius)
 
   // Calculate opacity using smoothstep for both inner and outer edges
   const innerEdge = smoothstep(float(0).sub(innerFade), float(0), dist)
@@ -142,6 +154,8 @@ export const shape = (params?: ShapeParams) => {
       endOuterFade,
       proportional: isProp,
       easing,
+      startOffset,
+      endOffset,
     },
     nodes: { colorNode },
   }
