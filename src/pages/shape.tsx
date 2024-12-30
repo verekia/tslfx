@@ -11,7 +11,7 @@ const defaultStartSize = 0.4
 const defaultStartThickness = 0.4
 const defaultStartInnerFade = 0.8
 const defaultStartOuterFade = 0
-
+const defaultEasing = 0
 const defaultEndColor = new Vector4(1, 0.8, 0, 1)
 const defaultEndSize = 1
 const defaultEndThickness = 0
@@ -46,6 +46,7 @@ const ShapeMaterial = () => {
       // rotation,
       // rotating,
       proportional,
+      easing,
     },
     setControls,
   ] = useControls(() => ({
@@ -105,6 +106,10 @@ const ShapeMaterial = () => {
       //   step: 0.01,
       // },
       // rotating: { value: defaultRotating },
+      easing: {
+        options: { Linear: 0, EaseIn: 1, EaseOut: 2, EaseInOut: 3 },
+        value: defaultEasing,
+      },
       proportional: { value: defaultProportional },
     }),
   }))
@@ -152,6 +157,7 @@ const ShapeMaterial = () => {
   uniforms.endInnerFade.value = endInnerFade
   uniforms.startOuterFade.value = startOuterFade
   uniforms.endOuterFade.value = endOuterFade
+  uniforms.easing.value = easing as 0 | 1 | 2 | 3
 
   return <meshBasicNodeMaterial ref={materialRef} {...nodes} transparent />
 }

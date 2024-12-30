@@ -9,3 +9,4 @@ export * from './template'
 export * from './impact'
 
 export * from './util'
+export * from './easing'

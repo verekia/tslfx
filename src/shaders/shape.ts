@@ -11,6 +11,7 @@ import {
 } from 'three/tsl'
 import { sdCircle } from './sdf/circle'
 import { Node } from 'three/webgpu'
+import { easeInCubic, easeInOutCubic, easeOutCubic, linear } from './easing'
 
 type ShapeParams = {
   startSize?: number
@@ -25,6 +26,7 @@ type ShapeParams = {
   endOuterSmoothness?: number
   time?: number
   duration?: number
+  easing?: 0 | 1 | 2 | 3
   // shape?: 0 | 1 | 2
   // rotation?: number
   // rotating?: boolean
@@ -50,6 +52,7 @@ const defaultParams: Required<ShapeParams> = {
   // shape: 0,
   // rotation: 0,
   proportional: false,
+  easing: 0,
   // rotating: true,
 }
 
@@ -72,6 +75,7 @@ export const shape = (params?: ShapeParams) => {
   // const r = uniform(par.rotation)
   // const isRot = uniform(par.rotating ? 1 : 0)
   const isProp = uniform(par.proportional ? 1 : 0)
+  const easing = uniform(par.easing)
   const p = uv().sub(0.5)
 
   const normStartThickness = startThickness.div(2)
@@ -83,16 +87,26 @@ export const shape = (params?: ShapeParams) => {
   const normStartSize = startSize.div(2)
   const normEndSize = endSize.div(2)
 
-  const color = mix(startColor, endColor, t)
-  const size = mix(normStartSize, normEndSize, t)
+  const easedT = select(
+    easing.equal(1),
+    easeInCubic(t),
+    select(
+      easing.equal(2),
+      easeOutCubic(t),
+      select(easing.equal(3), easeInOutCubic(t), linear(t))
+    )
+  )
 
-  const thickness = mix(normStartThickness, normEndThickness, t).mul(
+  const color = mix(startColor, endColor, easedT)
+  const size = mix(normStartSize, normEndSize, easedT)
+
+  const thickness = mix(normStartThickness, normEndThickness, easedT).mul(
     select(isProp, size, float(1))
   )
-  const innerFade = mix(normStartInnerFade, normEndInnerFade, t).mul(
+  const innerFade = mix(normStartInnerFade, normEndInnerFade, easedT).mul(
     select(isProp, size, float(1))
   )
-  const outerFade = mix(normStartOuterFade, normEndOuterFade, t).mul(
+  const outerFade = mix(normStartOuterFade, normEndOuterFade, easedT).mul(
     select(isProp, size, float(1))
   )
 
@@ -127,6 +141,7 @@ export const shape = (params?: ShapeParams) => {
       startOuterFade,
       endOuterFade,
       proportional: isProp,
+      easing,
     },
     nodes: { colorNode },
   }
