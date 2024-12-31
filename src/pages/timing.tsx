@@ -2,13 +2,26 @@ import Page from '@/components/Page'
 import { pipe } from '@/shaders'
 import { shape } from '@/shaders/shape'
 import { useFrame } from '@react-three/fiber'
-import { useMemo, useRef } from 'react'
+import { useControls } from 'leva'
+import { useEffect, useMemo, useRef } from 'react'
 import { Vector2, Vector4 } from 'three'
 import { mix } from 'three/tsl'
 import { UniformNode } from 'three/webgpu'
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max)
+
+const timings = {
+  drop1: { startAt: 0, duration: 0.12 },
+  drop2: { startAt: 0.1, duration: 0.12 },
+  drop3: { startAt: 0.21, duration: 0.12 },
+  blow1: { startAt: 0.15, duration: 0.12 },
+  explosion1: { startAt: 0.3, duration: 0.45 },
+  blow2: { startAt: 0.26, duration: 0.12 },
+  explosion2: { startAt: 0.4, duration: 0.45 },
+  blow3: { startAt: 0.36, duration: 0.12 },
+  explosion3: { startAt: 0.5, duration: 0.45 },
+}
 
 const updateShape = (
   shape: {
@@ -29,7 +42,16 @@ const updateShape = (
 
 const TripleExplosionMaterial = () => {
   const totalTime = useRef(0)
-  const totalDuration = useRef(4)
+
+  const [{ time, duration, autoplay }, setControls] = useControls(() => ({
+    time: { value: 0, min: 0, max: 1, step: 0.01 },
+    duration: { value: 4, min: 1, max: 8, step: 0.1 },
+    autoplay: { value: true },
+  }))
+
+  useEffect(() => {
+    totalTime.current = time
+  }, [time])
 
   const [
     drop1,
@@ -189,19 +211,6 @@ const TripleExplosionMaterial = () => {
   )
 
   useFrame((_, delta) => {
-    const timings = {
-      drop1: { startAt: 0, duration: 0.12 },
-      drop2: { startAt: 0.1, duration: 0.12 },
-      drop3: { startAt: 0.21, duration: 0.12 },
-      blow1: { startAt: 0.15, duration: 0.12 },
-      explosion1: { startAt: 0.3, duration: 0.45 },
-      blow2: { startAt: 0.26, duration: 0.12 },
-      explosion2: { startAt: 0.4, duration: 0.45 },
-      blow3: { startAt: 0.36, duration: 0.12 },
-      explosion3: { startAt: 0.5, duration: 0.45 },
-    }
-    totalTime.current += delta / totalDuration.current
-
     updateShape(drop1, timings.drop1, totalTime.current)
     updateShape(drop2, timings.drop2, totalTime.current)
     updateShape(drop3, timings.drop3, totalTime.current)
@@ -211,9 +220,18 @@ const TripleExplosionMaterial = () => {
     updateShape(blow2, timings.blow2, totalTime.current)
     updateShape(explosion3, timings.explosion3, totalTime.current)
     updateShape(blow3, timings.blow3, totalTime.current)
+
+    if (!autoplay) {
+      return
+    }
+
+    totalTime.current += delta / duration
+
     if (totalTime.current > 1) {
       totalTime.current = 0
     }
+
+    setControls({ time: totalTime.current })
   })
 
   return <meshBasicNodeMaterial colorNode={combined} transparent />
