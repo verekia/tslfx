@@ -1,153 +1,128 @@
 import Page from '@/components/Page'
-import { shape } from '@/shaders/shape'
+import { shape, ShapePreset, shapeDefaults, ShapeParams } from '@/shaders/shape'
 import { useFrame } from '@react-three/fiber'
-import { folder, useControls } from 'leva'
-import { useMemo, useRef } from 'react'
-import { Vector2, Vector4 } from 'three'
-import { MeshBasicNodeMaterial } from 'three/webgpu'
+import { button, folder, useControls } from 'leva'
+import { useMemo } from 'react'
+import { Vector4 } from 'three'
 
-const defaultStartColor = new Vector4(1, 0, 0, 1)
-const defaultStartSize = 0.4
-const defaultStartThickness = 0.4
-const defaultStartInnerFade = 0.8
-const defaultStartOuterFade = 0
-const defaultEasing = 2
-const defaultEndColor = new Vector4(1, 0.8, 0, 1)
-const defaultEndSize = 1
-const defaultEndThickness = 0
-const defaultEndInnerFade = 0
-const defaultEndOuterFade = 0
-const defaultStartOffset = new Vector2(0, 0)
-const defaultEndOffset = new Vector2(0, 0)
+const explosion = {
+  ...shapeDefaults,
+  easing: 2,
+  duration: 1.2,
+  startColor: new Vector4(1, 0, 0, 1),
+  startSize: 0.5,
+  startThickness: 1,
+  startInnerFade: 1,
+  endColor: new Vector4(1, 0.8, 0, 1),
+  endThickness: 0,
+} as const satisfies ShapeParams
 
-const defaultProportional = 0
-const defaultDuration = 1
-const defaultBoomerang = 0
-// const defaultRotation = 0
-// const defaultRotating = false
+const voidBlast = {
+  ...shapeDefaults,
+  duration: 1.2,
+  easing: 2,
+  boomerang: 1,
+  startColor: new Vector4(0.1, 0, 0.4, 1),
+  startSize: 0.1,
+  startOuterFade: 0.7,
+  endColor: new Vector4(0.01, 0, 0.04, 1),
+  endInnerFade: 0.5,
+  endThickness: 0,
+} as const satisfies ShapeParams
+
+export const shapePresets = [
+  { name: 'Explosion', params: explosion },
+  { name: 'Void Blast', params: voidBlast },
+  // { name: 'Default', params: shapeDefaults },
+] as const satisfies ShapePreset[]
+
+const defaultParams = shapePresets[0].params
 
 const ShapeMaterial = () => {
-  const materialRef = useRef<MeshBasicNodeMaterial>(null)
+  const [controls, setControls] = useControls(() => {
+    // @ts-expect-error
+    const presets: Record<(typeof shapePresets)[number]['name'], ReturnType<typeof button>> = Object.fromEntries(
+      shapePresets.map((preset) => [
+        preset.name,
+        button(() => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { visible, ...newParams } = preset.params
+          setControls({
+            ...newParams,
+            boomerang: Boolean(newParams.boomerang),
+            proportional: Boolean(newParams.proportional),
+            startColor: {
+              r: newParams.startColor.x * 255,
+              g: newParams.startColor.y * 255,
+              b: newParams.startColor.z * 255,
+              a: newParams.startColor.w,
+            },
+            endColor: {
+              r: newParams.endColor.x * 255,
+              g: newParams.endColor.y * 255,
+              b: newParams.endColor.z * 255,
+              a: newParams.endColor.w,
+            },
+            autoplay: true,
+          })
+        }),
+      ])
+    )
 
-  const [
-    {
-      startColor,
-      endColor,
-      startSize,
-      endSize,
-      startThickness,
-      endThickness,
-      startInnerFade,
-      endInnerFade,
-      startOuterFade,
-      endOuterFade,
-      time,
-      duration,
-      autoplay,
-      // shape: sh,
-      // rotation,
-      // rotating,
-      proportional,
-      easing,
-      startOffsetX,
-      startOffsetY,
-      endOffsetX,
-      endOffsetY,
-      boomerang,
-    },
-    setControls,
-  ] = useControls(() => ({
-    Animation: folder({
-      time: { value: 0, min: 0, max: 1, step: 0.01 },
-      duration: { value: defaultDuration, min: 0, max: 3, step: 0.1 },
-      autoplay: { value: true },
-    }),
-    Uniforms: folder({
-      easing: {
-        options: { Linear: 0, EaseIn: 1, EaseOut: 2, EaseInOut: 3 },
-        value: defaultEasing,
-      },
-      boomerang: { value: Boolean(defaultBoomerang) },
-      proportional: { value: Boolean(defaultProportional) },
-      startColor: {
-        value: {
-          r: defaultStartColor.x * 255,
-          g: defaultStartColor.y * 255,
-          b: defaultStartColor.z * 255,
-          a: defaultStartColor.w,
+    return {
+      Animation: folder({
+        time: { value: 0, min: 0, max: 1, step: 0.01 },
+        duration: { value: defaultParams.duration, min: 0, max: 3, step: 0.1 },
+        autoplay: { value: true },
+      }),
+      Presets: folder(presets),
+      Uniforms: folder({
+        easing: { options: { Linear: 0, EaseIn: 1, EaseOut: 2, EaseInOut: 3 }, value: defaultParams.easing },
+        boomerang: { value: Boolean(defaultParams.boomerang) },
+        proportional: { value: Boolean(defaultParams.proportional) },
+        startColor: { value: { r: 255, g: 0, b: 0, a: 1 } },
+        startSize: { value: defaultParams.startSize, min: 0, max: 1, step: 0.01 },
+        startThickness: { value: defaultParams.startThickness, min: 0, max: 1, step: 0.01 },
+        startInnerFade: { value: defaultParams.startInnerFade, min: 0, max: 1, step: 0.01 },
+        startOuterFade: { value: defaultParams.startOuterFade, min: 0, max: 1, step: 0.01 },
+        startOffset: {
+          value: { x: defaultParams.startOffset.x, y: defaultParams.startOffset.y },
+          min: -1,
+          max: 1,
+          joystick: 'invertY',
         },
-      },
-      // shape: {
-      //   options: { Circle: 0, Heart: 1, Vesica: 2 },
-      //   value: 0,
-      // },
-      startSize: { value: defaultStartSize, min: 0, max: 1, step: 0.01 },
-      startThickness: {
-        value: defaultStartThickness,
-        min: 0,
-        max: 1,
-        step: 0.01,
-      },
-      startInnerFade: {
-        value: defaultStartInnerFade,
-        min: 0,
-        max: 1,
-        step: 0.01,
-      },
-      startOuterFade: {
-        value: defaultStartOuterFade,
-        min: 0,
-        max: 1,
-        step: 0.01,
-      },
-      startOffsetX: {
-        value: defaultStartOffset.x,
-        min: -1,
-        max: 1,
-        step: 0.01,
-      },
-      startOffsetY: {
-        value: defaultStartOffset.y,
-        min: -1,
-        max: 1,
-        step: 0.01,
-      },
-      endColor: {
-        value: {
-          r: defaultEndColor.x * 255,
-          g: defaultEndColor.y * 255,
-          b: defaultEndColor.z * 255,
-          a: defaultEndColor.w,
+        endColor: { value: { r: 255, g: 200, b: 0, a: 1 } },
+        endSize: { value: defaultParams.endSize, min: 0, max: 1, step: 0.01 },
+        endThickness: { value: defaultParams.endThickness, min: 0, max: 1, step: 0.01 },
+        endInnerFade: { value: defaultParams.endInnerFade, min: 0, max: 1, step: 0.01 },
+        endOuterFade: { value: defaultParams.endOuterFade, min: 0, max: 1, step: 0.01 },
+        endOffset: {
+          value: { x: defaultParams.endOffset.x, y: defaultParams.endOffset.y },
+          min: -1,
+          max: 1,
+          joystick: 'invertY',
         },
-      },
-      endSize: { value: defaultEndSize, min: 0, max: 1, step: 0.01 },
-      endThickness: { value: defaultEndThickness, min: 0, max: 1, step: 0.01 },
-      endInnerFade: { value: defaultEndInnerFade, min: 0, max: 1, step: 0.01 },
-      endOuterFade: { value: defaultEndOuterFade, min: 0, max: 1, step: 0.01 },
-      endOffsetX: { value: defaultEndOffset.x, min: -1, max: 1, step: 0.01 },
-      endOffsetY: { value: defaultEndOffset.y, min: -1, max: 1, step: 0.01 },
-      // rotation: {
-      //   value: defaultRotation,
-      //   min: -2 * Math.PI,
-      //   max: 2 * Math.PI,
-      //   step: 0.01,
-      // },
-      // rotating: { value: defaultRotating },
-    }),
-  }))
+        // shape: {
+        //   options: { Circle: 0, Heart: 1, Vesica: 2 },
+        //   value: 0,
+        // },
+        // rotation: {
+        //   value: defaultRotation,
+        //   min: -2 * Math.PI,
+        //   max: 2 * Math.PI,
+        //   step: 0.01,
+        // },
+        // rotating: { value: defaultRotating },
+      }),
+    }
+  })
 
   const { uniforms, nodes } = useMemo(() => shape(), [])
 
-  // useEffect(() => {
-  //   if (materialRef.current) {
-  //     materialRef.current.needsUpdate = true
-  //   }
-  // }, [continuousRotation])
-
   useFrame((_, delta) => {
-    if (!autoplay) return
+    if (!controls.autoplay) return
 
-    uniforms.time.value += delta / duration
+    uniforms.time.value += delta / controls.duration
 
     if (uniforms.time.value > 1) {
       uniforms.time.value = 0
@@ -156,37 +131,39 @@ const ShapeMaterial = () => {
     setControls({ time: uniforms.time.value })
   })
 
-  uniforms.startColor.value.x = startColor.r / 255
-  uniforms.startColor.value.y = startColor.g / 255
-  uniforms.startColor.value.z = startColor.b / 255
-  uniforms.startColor.value.w = startColor.a
+  uniforms.time.value = controls.time
 
-  uniforms.endColor.value.x = endColor.r / 255
-  uniforms.endColor.value.y = endColor.g / 255
-  uniforms.endColor.value.z = endColor.b / 255
-  uniforms.endColor.value.w = endColor.a
+  uniforms.easing.value = controls.easing as 0 | 1 | 2 | 3
+  uniforms.boomerang.value = Number(controls.boomerang) as 0 | 1
+  uniforms.proportional.value = Number(controls.proportional) as 0 | 1
 
-  uniforms.startSize.value = startSize
-  uniforms.startThickness.value = startThickness
-  uniforms.endSize.value = endSize
-  uniforms.endThickness.value = endThickness
+  uniforms.startColor.value.x = controls.startColor.r / 255
+  uniforms.startColor.value.y = controls.startColor.g / 255
+  uniforms.startColor.value.z = controls.startColor.b / 255
+  uniforms.startColor.value.w = controls.startColor.a
+  uniforms.startSize.value = controls.startSize
+  uniforms.startThickness.value = controls.startThickness
+  uniforms.startInnerFade.value = controls.startInnerFade
+  uniforms.startOuterFade.value = controls.startOuterFade
+  uniforms.startOffset.value.x = controls.startOffset.x
+  uniforms.startOffset.value.y = controls.startOffset.y
+
+  uniforms.endColor.value.x = controls.endColor.r / 255
+  uniforms.endColor.value.y = controls.endColor.g / 255
+  uniforms.endColor.value.z = controls.endColor.b / 255
+  uniforms.endColor.value.w = controls.endColor.a
+  uniforms.endSize.value = controls.endSize
+  uniforms.endThickness.value = controls.endThickness
+  uniforms.endInnerFade.value = controls.endInnerFade
+  uniforms.endOuterFade.value = controls.endOuterFade
+  uniforms.endOffset.value.x = controls.endOffset.x
+  uniforms.endOffset.value.y = controls.endOffset.y
+
   // uniforms.shape.value = sh as 0 | 1 | 2
-  uniforms.time.value = time
   // uniforms.rotation.value = rotation
   // uniforms.rotating.value = rotating ? 1 : 0
-  uniforms.proportional.value = Number(proportional) as 0 | 1
-  uniforms.boomerang.value = Number(boomerang) as 0 | 1
-  uniforms.startInnerFade.value = startInnerFade
-  uniforms.endInnerFade.value = endInnerFade
-  uniforms.startOuterFade.value = startOuterFade
-  uniforms.endOuterFade.value = endOuterFade
-  uniforms.easing.value = easing as 0 | 1 | 2 | 3
-  uniforms.startOffset.value.x = startOffsetX
-  uniforms.startOffset.value.y = startOffsetY
-  uniforms.endOffset.value.x = endOffsetX
-  uniforms.endOffset.value.y = endOffsetY
 
-  return <meshBasicNodeMaterial ref={materialRef} {...nodes} transparent />
+  return <meshBasicNodeMaterial {...nodes} transparent />
 }
 
 const ShapePage = () => (
