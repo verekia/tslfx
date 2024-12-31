@@ -6,7 +6,6 @@ import {
   dot,
   abs,
   max,
-  uv,
   uniform,
   float,
   floor,
@@ -14,7 +13,7 @@ import {
   min,
   mix,
 } from 'three/tsl'
-import { multiplyRgbByAlpha } from './util'
+import { multiplyRgbByAlpha, taylorInvSqrt, uvCenter } from './util'
 
 // https://github.com/stegu/webgl-noise
 
@@ -22,9 +21,6 @@ const mod289 = (x: ReturnType<typeof vec3 | typeof vec4>) =>
   x.sub(floor(x.mul(1 / 289)).mul(289))
 
 const permute = (x: ReturnType<typeof vec4>) => mod289(x.mul(34).add(10).mul(x))
-
-const taylorInvSqrt = (r: ReturnType<typeof vec4>) =>
-  float(1.79284291400159).sub(r.mul(0.85373472095314))
 
 const snoise = (v: ReturnType<typeof vec3>) => {
   const C = vec2(1 / 6, 1 / 3)
@@ -132,7 +128,7 @@ export const simplexNoise3D = (params: SimplexNoise3DParams) => {
   const color1 = uniform(p.color1)
   const color2 = uniform(p.color2)
 
-  const space = uv().sub(0.5).mul(scale).add(0.5)
+  const space = uvCenter().mul(scale)
 
   // @ts-expect-error
   let grayscaleFloat = getFloatValue(space, time)

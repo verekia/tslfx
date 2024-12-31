@@ -1,9 +1,9 @@
 import { Vector2, Vector4 } from 'three'
-import { uv, uniform, mix, vec4, smoothstep, float, select } from 'three/tsl'
+import { uniform, mix, vec4, smoothstep, float, select } from 'three/tsl'
 
 import { sdCircle } from './sdf/circle'
 import { easeInCubic, easeInOutCubic, easeOutCubic, linear } from './easing'
-import { multiplyRgbByAlpha } from './util'
+import { multiplyRgbByAlpha, uvCenter } from './util'
 
 type ShapeParams = {
   startSize?: number
@@ -73,7 +73,7 @@ export const shape = (params?: ShapeParams) => {
   // const isRot = uniform(par.rotating ? 1 : 0)
   const isProp = uniform(par.proportional ? 1 : 0)
   const easing = uniform(par.easing)
-  const p = uv().sub(0.5)
+  const p = uvCenter()
 
   // Actually the normalized ones are the parameters, these are on 0 - 0.5
   const normStartThickness = startThickness.div(2)

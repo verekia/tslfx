@@ -1,8 +1,7 @@
-import { dot, max, min, mul, select, sign, sqrt, vec2 } from 'three/tsl'
+import { max, min, mul, select, sign, sqrt, vec2 } from 'three/tsl'
+import { dot2 } from '../util'
 
 // https://iquilezles.org/articles/distfunctions2d/
-
-const dot2 = (p: ReturnType<typeof vec2>) => dot(p, p)
 
 export const sdHeart = (n: ReturnType<typeof vec2>) => {
   const p = vec2(n.x.abs(), n.y)

@@ -1,6 +1,6 @@
-import { uniform, uv, mix, rotate } from 'three/tsl'
+import { uniform, mix, rotate } from 'three/tsl'
 import { Vector4 } from 'three'
-import { multiplyRgbByAlpha } from './util'
+import { multiplyRgbByAlpha, uvCenter } from './util'
 
 type GradientParams = {
   color1?: Vector4
@@ -21,7 +21,7 @@ export const gradient = (params: GradientParams = {}) => {
   const color2 = uniform(p.color2)
   const rotation = uniform(p.rotation)
 
-  const rotatedUV = rotate(uv().sub(0.5), rotation).add(0.5)
+  const rotatedUV = rotate(uvCenter(), rotation)
   const colorNode = mix(
     multiplyRgbByAlpha(color1),
     multiplyRgbByAlpha(color2),

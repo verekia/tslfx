@@ -1,6 +1,5 @@
 import { Vector4 } from 'three'
 import {
-  uv,
   uniform,
   type ShaderNodeObject,
   vec2,
@@ -12,7 +11,7 @@ import {
 import type { UniformNode } from 'three/webgpu'
 import { sdCircle } from './sdf/circle'
 import { sdVesica } from './sdf/vesica'
-import { multiplyRgbByAlpha } from './util'
+import { multiplyRgbByAlpha, uvCenterNdc } from './util'
 
 export type ImpactParams = {
   circleColor?: Vector4
@@ -56,7 +55,7 @@ export const impact = (params: ImpactParams) => {
   const cse = uniform(par.circleSizeEnd)
   const ct = uniform(par.circleThickness)
 
-  const p = uv().sub(0.5).mul(2).mul(vec2(a, 1))
+  const p = uvCenterNdc().mul(vec2(a, 1))
 
   const radius = t.pow(0.5)
   const thickness = ct.mul(0.5)

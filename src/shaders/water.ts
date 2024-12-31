@@ -1,15 +1,6 @@
 import { Vector4 } from 'three'
-import {
-  vec2,
-  vec3,
-  vec4,
-  uv,
-  uniform,
-  float,
-  mix,
-  mx_noise_vec3,
-} from 'three/tsl'
-import { multiplyRgbByAlpha } from './util'
+import { vec2, vec3, vec4, uniform, float, mix, mx_noise_vec3 } from 'three/tsl'
+import { multiplyRgbByAlpha, uvCenter } from './util'
 
 type WaterParams = {
   color1?: Vector4
@@ -40,7 +31,7 @@ export const water = (params: WaterParams) => {
   const color1 = uniform(p.color1)
   const color2 = uniform(p.color2)
 
-  const space = uv().sub(0.5).mul(scale).add(0.5)
+  const space = uvCenter().mul(scale)
 
   // @ts-expect-error
   let rainbowFloat = getFloatValue(space, time)
