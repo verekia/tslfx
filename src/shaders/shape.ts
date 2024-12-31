@@ -24,8 +24,9 @@ type ShapeParams = {
   // shape?: 0 | 1 | 2
   // rotation?: number
   // rotating?: boolean
-  proportional?: boolean
-  isVisible?: 0 | 1
+  proportional?: 0 | 1
+  visible?: 0 | 1
+  boomerang?: 0 | 1
 }
 
 const defaultParams: Required<ShapeParams> = {
@@ -45,10 +46,11 @@ const defaultParams: Required<ShapeParams> = {
   duration: 1,
   // shape: 0,
   // rotation: 0,
-  proportional: false,
+  proportional: 0,
   easing: 0,
   // rotating: true,
-  isVisible: 1,
+  visible: 1,
+  boomerang: 0,
 }
 
 export const shape = (params?: ShapeParams) => {
@@ -67,15 +69,30 @@ export const shape = (params?: ShapeParams) => {
   const endInnerFade = uniform(par.endInnerSmoothness)
   const endOuterFade = uniform(par.endOuterSmoothness)
   const endOffset = uniform(par.endOffset)
-  const isVisible = uniform(par.isVisible)
+  const visible = uniform(par.visible)
+  const boomerang = uniform(par.boomerang)
+
   const t = uniform(par.time)
   // const sh = uniform(par.shape)
   const d = uniform(par.duration)
   // const r = uniform(par.rotation)
   // const isRot = uniform(par.rotating ? 1 : 0)
-  const isProp = uniform(par.proportional ? 1 : 0)
+  const isProp = uniform(par.proportional)
   const easing = uniform(par.easing)
+
   const p = uvCenter()
+
+  const boomerangT = select(
+    boomerang,
+    select(
+      t.greaterThan(0.5),
+      // For second half, normalize 0.5-1 to 1-0
+      float(1).sub(t.sub(0.5).mul(2)),
+      // For first half, normalize 0-0.5 to 0-1
+      t.mul(2)
+    ),
+    t
+  )
 
   // Actually the normalized ones are the parameters, these are on 0 - 0.5
   const normStartThickness = startThickness.div(2)
@@ -89,13 +106,14 @@ export const shape = (params?: ShapeParams) => {
   const normStartOffset = startOffset.div(2)
   const normEndOffset = endOffset.div(2)
 
+  // Use normalized time for easing calculations
   const easedT = select(
     easing.equal(1),
-    easeInCubic(t),
+    easeInCubic(boomerangT),
     select(
       easing.equal(2),
-      easeOutCubic(t),
-      select(easing.equal(3), easeInOutCubic(t), linear(t))
+      easeOutCubic(boomerangT),
+      select(easing.equal(3), easeInOutCubic(boomerangT), linear(boomerangT))
     )
   )
 
@@ -126,7 +144,7 @@ export const shape = (params?: ShapeParams) => {
 
   const colorNode = multiplyRgbByAlpha(vec4(color.xyz, opacity))
 
-  const colorNodeVisible = select(isVisible, colorNode, float(0))
+  const colorNodeVisible = select(visible, colorNode, float(0))
 
   return {
     uniforms: {
@@ -149,7 +167,8 @@ export const shape = (params?: ShapeParams) => {
       easing,
       startOffset,
       endOffset,
-      isVisible,
+      visible,
+      boomerang,
     },
     nodes: { colorNode: colorNodeVisible },
   }

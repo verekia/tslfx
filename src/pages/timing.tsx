@@ -24,7 +24,7 @@ const timings = {
 
 const updateShape = (
   shape: {
-    uniforms: { time: UniformNode<number>; isVisible: UniformNode<number> }
+    uniforms: { time: UniformNode<number>; visible: UniformNode<number> }
   },
   timing: { startAt: number; duration: number },
   totalTime: number
@@ -34,7 +34,7 @@ const updateShape = (
     0,
     1
   )
-  shape.uniforms.isVisible.value = Number(
+  shape.uniforms.visible.value = Number(
     shape.uniforms.time.value !== 0 && shape.uniforms.time.value !== 1
   ) as 0 | 1
 }
@@ -114,7 +114,7 @@ const TripleExplosionMaterial = () => {
         startSize: 0.1,
         startThickness: 0.5,
         startInnerSmoothness: 1,
-        proportional: true,
+        proportional: 1,
         endColor: new Vector4(1, 1, 1, 0.5),
         startOffset: new Vector2(-0.4, 0.4),
         endSize: 0.6,
@@ -142,7 +142,7 @@ const TripleExplosionMaterial = () => {
         startSize: 0.1,
         startThickness: 0.5,
         startInnerSmoothness: 1,
-        proportional: true,
+        proportional: 1,
         endColor: new Vector4(1, 1, 1, 0.5),
         startOffset: new Vector2(0.4, 0.4),
         endSize: 0.6,
@@ -170,7 +170,7 @@ const TripleExplosionMaterial = () => {
         startSize: 0.1,
         startThickness: 0.5,
         startInnerSmoothness: 1,
-        proportional: true,
+        proportional: 1,
         endColor: new Vector4(1, 1, 1, 0.5),
         startOffset: new Vector2(0, -0.4),
         endSize: 0.6,

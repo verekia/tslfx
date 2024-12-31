@@ -20,9 +20,9 @@ const defaultEndOuterFade = 0
 const defaultStartOffset = new Vector2(0, 0)
 const defaultEndOffset = new Vector2(0, 0)
 
-const defaultProportional = false
+const defaultProportional = 0
 const defaultDuration = 1
-
+const defaultBoomerang = 0
 // const defaultRotation = 0
 // const defaultRotating = false
 
@@ -53,6 +53,7 @@ const ShapeMaterial = () => {
       startOffsetY,
       endOffsetX,
       endOffsetY,
+      boomerang,
     },
     setControls,
   ] = useControls(() => ({
@@ -62,6 +63,12 @@ const ShapeMaterial = () => {
       autoplay: { value: true },
     }),
     Uniforms: folder({
+      easing: {
+        options: { Linear: 0, EaseIn: 1, EaseOut: 2, EaseInOut: 3 },
+        value: defaultEasing,
+      },
+      boomerang: { value: Boolean(defaultBoomerang) },
+      proportional: { value: Boolean(defaultProportional) },
       startColor: {
         value: {
           r: defaultStartColor.x * 255,
@@ -126,11 +133,6 @@ const ShapeMaterial = () => {
       //   step: 0.01,
       // },
       // rotating: { value: defaultRotating },
-      easing: {
-        options: { Linear: 0, EaseIn: 1, EaseOut: 2, EaseInOut: 3 },
-        value: defaultEasing,
-      },
-      proportional: { value: defaultProportional },
     }),
   }))
 
@@ -172,7 +174,8 @@ const ShapeMaterial = () => {
   uniforms.time.value = time
   // uniforms.rotation.value = rotation
   // uniforms.rotating.value = rotating ? 1 : 0
-  uniforms.proportional.value = proportional ? 1 : 0
+  uniforms.proportional.value = Number(proportional) as 0 | 1
+  uniforms.boomerang.value = Number(boomerang) as 0 | 1
   uniforms.startInnerFade.value = startInnerFade
   uniforms.endInnerFade.value = endInnerFade
   uniforms.startOuterFade.value = startOuterFade
