@@ -25,20 +25,21 @@ type ShapeParams = {
   // rotation?: number
   // rotating?: boolean
   proportional?: boolean
+  isVisible?: 0 | 1
 }
 
 const defaultParams: Required<ShapeParams> = {
   startSize: 1,
   startColor: new Vector4(0, 0, 0, 1),
   startThickness: 0.2,
-  startInnerSmoothness: 0.01,
-  startOuterSmoothness: 0.01,
+  startInnerSmoothness: 0,
+  startOuterSmoothness: 0,
   startOffset: new Vector2(0, 0),
   endSize: 1,
   endColor: new Vector4(1, 1, 1, 1),
   endThickness: 0.2,
-  endInnerSmoothness: 0.01,
-  endOuterSmoothness: 0.01,
+  endInnerSmoothness: 0,
+  endOuterSmoothness: 0,
   endOffset: new Vector2(0, 0),
   time: 0,
   duration: 1,
@@ -47,6 +48,7 @@ const defaultParams: Required<ShapeParams> = {
   proportional: false,
   easing: 0,
   // rotating: true,
+  isVisible: 1,
 }
 
 export const shape = (params?: ShapeParams) => {
@@ -65,7 +67,7 @@ export const shape = (params?: ShapeParams) => {
   const endInnerFade = uniform(par.endInnerSmoothness)
   const endOuterFade = uniform(par.endOuterSmoothness)
   const endOffset = uniform(par.endOffset)
-
+  const isVisible = uniform(par.isVisible)
   const t = uniform(par.time)
   // const sh = uniform(par.shape)
   const d = uniform(par.duration)
@@ -124,6 +126,8 @@ export const shape = (params?: ShapeParams) => {
 
   const colorNode = multiplyRgbByAlpha(vec4(color.xyz, opacity))
 
+  const colorNodeVisible = select(isVisible, colorNode, float(0))
+
   return {
     uniforms: {
       startColor,
@@ -145,7 +149,8 @@ export const shape = (params?: ShapeParams) => {
       easing,
       startOffset,
       endOffset,
+      isVisible,
     },
-    nodes: { colorNode },
+    nodes: { colorNode: colorNodeVisible },
   }
 }

@@ -11,7 +11,7 @@ const defaultStartSize = 0.4
 const defaultStartThickness = 0.4
 const defaultStartInnerFade = 0.8
 const defaultStartOuterFade = 0
-const defaultEasing = 0
+const defaultEasing = 2
 const defaultEndColor = new Vector4(1, 0.8, 0, 1)
 const defaultEndSize = 1
 const defaultEndThickness = 0
@@ -21,7 +21,7 @@ const defaultStartOffset = new Vector2(0, 0)
 const defaultEndOffset = new Vector2(0, 0)
 
 const defaultProportional = false
-const defaultDuration = 1.8
+const defaultDuration = 1
 
 // const defaultRotation = 0
 // const defaultRotating = false

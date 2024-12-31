@@ -50,6 +50,9 @@ const Page = ({
           <Link href="/impact">
             <li>Impact</li>
           </Link>
+          <Link href="/timing">
+            <li>Timing</li>
+          </Link>
           <Link href="/pulsing-ring">
             <li>Pulsing Ring</li>
           </Link>
