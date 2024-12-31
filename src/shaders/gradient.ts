@@ -21,7 +21,7 @@ export const gradient = (params: GradientParams = {}) => {
   const color2 = uniform(p.color2)
   const rotation = uniform(p.rotation)
 
-  const rotatedUV = rotate(uvCenter(), rotation)
+  const rotatedUV = rotate(uvCenter(), rotation).add(0.5)
   const colorNode = mix(
     multiplyRgbByAlpha(color1),
     multiplyRgbByAlpha(color2),
