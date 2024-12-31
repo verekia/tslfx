@@ -12,9 +12,5 @@ export const sdVesica = (
 
   const condition = pAbs.y.sub(b).mul(d).greaterThan(pAbs.x.mul(b))
 
-  return select(
-    condition,
-    length(pAbs.sub(vec2(0, b))),
-    length(pAbs.sub(vec2(float(-1).mul(d), 0))).sub(r)
-  )
+  return select(condition, length(pAbs.sub(vec2(0, b))), length(pAbs.sub(vec2(float(-1).mul(d), 0))).sub(r))
 }

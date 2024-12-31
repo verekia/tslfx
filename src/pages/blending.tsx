@@ -1,9 +1,8 @@
 import Page from '@/components/Page'
-import { impact, pipe, pulsingRing } from '@/shaders'
+import { blendAlpha, impact, pipe, pulsingRing } from '@/shaders'
 import { water } from '@/shaders/water'
 import { useFrame } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
-import { blendColor } from 'three/tsl'
 import { MeshBasicNodeMaterial, Vector4 } from 'three/webgpu'
 
 const BlendingMaterial = () => {
@@ -53,20 +52,9 @@ const BlendingMaterial = () => {
     }
   })
 
-  const colorNode = pipe(
-    blendColor,
-    waterNodes.colorNode,
-    pulsingRingNodes.colorNode,
-    impactNodes.colorNode
-  )
+  const colorNode = pipe(blendAlpha, waterNodes.colorNode, pulsingRingNodes.colorNode, impactNodes.colorNode)
 
-  return (
-    <meshBasicNodeMaterial
-      ref={materialRef}
-      colorNode={colorNode}
-      transparent
-    />
-  )
+  return <meshBasicNodeMaterial ref={materialRef} colorNode={colorNode} transparent />
 }
 
 const BlendingPage = () => (

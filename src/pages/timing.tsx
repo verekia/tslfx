@@ -7,8 +7,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { Vector2, Vector4 } from 'three'
 import { UniformNode } from 'three/webgpu'
 
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(Math.max(value, min), max)
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
 const timings = {
   drop1: { startAt: 0, duration: 0.12 },
@@ -29,14 +28,8 @@ const updateShape = (
   timing: { startAt: number; duration: number },
   totalTime: number
 ) => {
-  shape.uniforms.time.value = clamp(
-    (totalTime - timing.startAt) / timing.duration,
-    0,
-    1
-  )
-  shape.uniforms.visible.value = Number(
-    shape.uniforms.time.value !== 0 && shape.uniforms.time.value !== 1
-  ) as 0 | 1
+  shape.uniforms.time.value = clamp((totalTime - timing.startAt) / timing.duration, 0, 1)
+  shape.uniforms.visible.value = Number(shape.uniforms.time.value !== 0 && shape.uniforms.time.value !== 1) as 0 | 1
 }
 
 const TripleExplosionMaterial = () => {
@@ -52,17 +45,7 @@ const TripleExplosionMaterial = () => {
     totalTime.current = time
   }, [time])
 
-  const [
-    drop1,
-    drop2,
-    drop3,
-    explosion1,
-    blow1,
-    explosion2,
-    blow2,
-    explosion3,
-    blow3,
-  ] = useMemo(
+  const [drop1, drop2, drop3, explosion1, blow1, explosion2, blow2, explosion3, blow3] = useMemo(
     () => [
       // drop 1
       shape({
@@ -196,17 +179,7 @@ const TripleExplosionMaterial = () => {
         drop2.nodes.colorNode,
         drop3.nodes.colorNode
       ),
-    [
-      drop1,
-      drop2,
-      drop3,
-      explosion1,
-      blow1,
-      explosion2,
-      blow2,
-      explosion3,
-      blow3,
-    ]
+    [drop1, drop2, drop3, explosion1, blow1, explosion2, blow2, explosion3, blow3]
   )
 
   useFrame((_, delta) => {

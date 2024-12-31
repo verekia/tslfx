@@ -1,13 +1,5 @@
 import { Vector4 } from 'three'
-import {
-  uniform,
-  type ShaderNodeObject,
-  vec2,
-  float,
-  rotate,
-  PI,
-  hash,
-} from 'three/tsl'
+import { uniform, type ShaderNodeObject, vec2, float, rotate, PI, hash } from 'three/tsl'
 import type { UniformNode } from 'three/webgpu'
 import { sdCircle } from './sdf/circle'
 import { sdVesica } from './sdf/vesica'
@@ -60,11 +52,7 @@ export const impact = (params: ImpactParams) => {
   const radius = t.pow(0.5)
   const thickness = ct.mul(0.5)
   const circleSize = css.add(cse.sub(css).mul(radius)).sub(thickness)
-  const circle = sdCircle(p, circleSize)
-    .abs()
-    .step(thickness)
-    .toVec4()
-    .mul(multiplyRgbByAlpha(cCol))
+  const circle = sdCircle(p, circleSize).abs().step(thickness).toVec4().mul(multiplyRgbByAlpha(cCol))
 
   const createVesica = (
     pos: ReturnType<typeof vec2>,
@@ -73,13 +61,8 @@ export const impact = (params: ImpactParams) => {
     const vesicaR = float(1).mul(t.oneMinus().mul(t).mul(2))
     const vesicaD = float(0.8).mul(t.oneMinus().mul(t).mul(2))
 
-    const rotatedPForVesica = rotate(pos, hash(se).mul(2).sub(1).mul(PI)).add(
-      vec2(0, t.mul(0.9))
-    )
-    const vesica = sdVesica(rotatedPForVesica, vesicaR, vesicaD)
-      .step(0.01)
-      .toVec4()
-      .mul(multiplyRgbByAlpha(vCol))
+    const rotatedPForVesica = rotate(pos, hash(se).mul(2).sub(1).mul(PI)).add(vec2(0, t.mul(0.9)))
+    const vesica = sdVesica(rotatedPForVesica, vesicaR, vesicaD).step(0.01).toVec4().mul(multiplyRgbByAlpha(vCol))
     return vesica
   }
 

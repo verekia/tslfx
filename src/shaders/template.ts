@@ -1,11 +1,4 @@
-import {
-  uv,
-  uniform,
-  vec2,
-  rotate,
-  select,
-  type ShaderNodeObject,
-} from 'three/tsl'
+import { uv, uniform, vec2, rotate, select, type ShaderNodeObject } from 'three/tsl'
 import { Vector2 } from 'three'
 import { Node, RotateNode } from 'three/webgpu'
 
@@ -17,13 +10,7 @@ type TemplateParams = {
   offset?: Vector2
   tileSize?: number
   tiled?: number
-  createNodes?: ({
-    position,
-    time,
-  }: {
-    position: ShaderNodeObject<RotateNode>
-    time: Node
-  }) => {
+  createNodes?: ({ position, time }: { position: ShaderNodeObject<RotateNode>; time: Node }) => {
     colorNode: Node
   }
 }
@@ -40,16 +27,7 @@ const defaultParams: Required<TemplateParams> = {
 }
 
 export const template = (params: TemplateParams) => {
-  const {
-    time,
-    scale,
-    aspect,
-    rotation,
-    offset,
-    tileSize,
-    tiled,
-    createNodes,
-  } = {
+  const { time, scale, aspect, rotation, offset, tileSize, tiled, createNodes } = {
     ...defaultParams,
     ...params,
   }
@@ -62,11 +40,7 @@ export const template = (params: TemplateParams) => {
   const ti = uniform(tiled)
 
   const scaled = uv().add(o).sub(0.5).mul(2).mul(s).mul(vec2(a, 1))
-  const tile = select(
-    ti.equal(1),
-    scaled.mul(ts).fract().sub(0.5).mul(2),
-    scaled
-  )
+  const tile = select(ti.equal(1), scaled.mul(ts).fract().sub(0.5).mul(2), scaled)
   const p = rotate(tile, r)
 
   const nodes = createNodes({ position: p, time: t })

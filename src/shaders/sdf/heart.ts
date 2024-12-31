@@ -9,11 +9,6 @@ export const sdHeart = (n: ReturnType<typeof vec2>) => {
   return select(
     p.y.add(p.x).greaterThan(1),
     sqrt(dot2(p.sub(vec2(0.25, 0.75)))).sub(sqrt(2.0).div(4.0)),
-    sqrt(
-      min(
-        dot2(p.sub(vec2(0.0, 1.0))),
-        dot2(p.sub(mul(0.5, max(p.x.add(p.y), 0.0))))
-      )
-    ).mul(sign(p.x.sub(p.y)))
+    sqrt(min(dot2(p.sub(vec2(0.0, 1.0))), dot2(p.sub(mul(0.5, max(p.x.add(p.y), 0.0)))))).mul(sign(p.x.sub(p.y)))
   )
 }

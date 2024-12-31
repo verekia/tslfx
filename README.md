@@ -105,12 +105,7 @@ TSL functions that take 2 nodes as arguments can be piped together into a single
 import { blendAlpha, pipe } from 'tslfx'
 
 // Simple layering of 3 effects on top of each other
-const colorNode = pipe(
-  blendAlpha,
-  effectA.colorNode,
-  effectB.colorNode,
-  effectC.colorNode
-)
+const colorNode = pipe(blendAlpha, effectA.colorNode, effectB.colorNode, effectC.colorNode)
 ```
 
 `pipe` is really just a more readable `.reduce()` of the arguments, nothing fancy.
@@ -124,6 +119,15 @@ import { blendAlpha } from 'tslfx'
 
 const colorNode = blendAlpha(effectA.colorNode, effectB.colorNode)
 ```
+
+### Easing
+
+A few easing functions are included in the library:
+
+- `linear`
+- `easeInCubic`
+- `easeOutCubic`
+- `easeInOutCubic`
 
 ## Noise
 

@@ -51,13 +51,7 @@ const Simplex3DMaterial = () => {
   simplex3DShader.uniforms.color2.value.z = color2.b / 255
   simplex3DShader.uniforms.color2.value.w = color2.a
 
-  return (
-    <meshBasicNodeMaterial
-      ref={materialRef}
-      {...simplex3DShader.nodes}
-      transparent
-    />
-  )
+  return <meshBasicNodeMaterial ref={materialRef} {...simplex3DShader.nodes} transparent />
 }
 
 const Simplex3DPage = () => (

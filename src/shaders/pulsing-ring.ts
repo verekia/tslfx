@@ -1,14 +1,5 @@
 import { Vector4 } from 'three'
-import {
-  mix,
-  time,
-  uniform,
-  vec4,
-  length,
-  positionLocal,
-  smoothstep,
-  float,
-} from 'three/tsl'
+import { mix, time, uniform, vec4, length, positionLocal, smoothstep, float } from 'three/tsl'
 
 type PulsingRingParams = {
   pulsesPerGroup?: number
@@ -72,11 +63,7 @@ export const pulsingRing = (params: PulsingRingParams = {}) => {
     const radiusProgress = pulseProgress.mul(isActive)
 
     const radius = radiusProgress.mul(maxRadius)
-    const transitionFactor = smoothstep(
-      transitionStart,
-      transitionStart.add(transitionDuration),
-      radiusProgress
-    )
+    const transitionFactor = smoothstep(transitionStart, transitionStart.add(transitionDuration), radiusProgress)
     const currentThickness = mix(startThickness, endThickness, transitionFactor)
 
     const dist = length(positionLocal.xy)

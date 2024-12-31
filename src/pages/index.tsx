@@ -21,11 +21,7 @@ const IndexPage = () => (
         VFX library
       </p>
       <p>
-        <Link
-          className="underline text-xl"
-          href="https://github.com/verekia/tslfx"
-          target="_blank"
-        >
+        <Link className="underline text-xl" href="https://github.com/verekia/tslfx" target="_blank">
           GitHub
         </Link>
       </p>

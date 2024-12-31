@@ -14,22 +14,21 @@ const defaultTileSize = 1
 const defaultTiled = false
 
 const TemplateMaterial = () => {
-  const { scale, time, aspect, rotation, offsetX, offsetY, tileSize, tiled } =
-    useControls({
-      scale: { value: defaultScale, min: 0.1, max: 10, step: 0.1 },
-      time: { value: defaultTime, min: 0, max: 1, step: 0.01 },
-      aspect: { value: defaultAspect, min: 0.1, max: 2, step: 0.1 },
-      rotation: {
-        value: defaultRotation,
-        min: 0,
-        max: 2 * Math.PI,
-        step: 0.01,
-      },
-      offsetX: { value: defaultOffsetX, min: -1, max: 1, step: 0.01 },
-      offsetY: { value: defaultOffsetY, min: -1, max: 1, step: 0.01 },
-      tileSize: { value: defaultTileSize, min: 0.1, max: 10, step: 0.1 },
-      tiled: { value: defaultTiled },
-    })
+  const { scale, time, aspect, rotation, offsetX, offsetY, tileSize, tiled } = useControls({
+    scale: { value: defaultScale, min: 0.1, max: 10, step: 0.1 },
+    time: { value: defaultTime, min: 0, max: 1, step: 0.01 },
+    aspect: { value: defaultAspect, min: 0.1, max: 2, step: 0.1 },
+    rotation: {
+      value: defaultRotation,
+      min: 0,
+      max: 2 * Math.PI,
+      step: 0.01,
+    },
+    offsetX: { value: defaultOffsetX, min: -1, max: 1, step: 0.01 },
+    offsetY: { value: defaultOffsetY, min: -1, max: 1, step: 0.01 },
+    tileSize: { value: defaultTileSize, min: 0.1, max: 10, step: 0.1 },
+    tiled: { value: defaultTiled },
+  })
 
   const { uniforms, nodes } = useMemo(
     () =>

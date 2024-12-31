@@ -18,10 +18,8 @@ const defaultParams: Required<WaterParams> = {
   octaves: 0,
 }
 
-const getFloatValue = (
-  xy: ReturnType<typeof vec2>,
-  time: ReturnType<typeof float>
-) => float(0.7).mul(mx_noise_vec3(vec3(xy, float(0.3).mul(time))))
+const getFloatValue = (xy: ReturnType<typeof vec2>, time: ReturnType<typeof float>) =>
+  float(0.7).mul(mx_noise_vec3(vec3(xy, float(0.3).mul(time))))
 
 export const water = (params: WaterParams) => {
   const p = { ...defaultParams, ...params }
@@ -52,11 +50,7 @@ export const water = (params: WaterParams) => {
 
   const adjusted = vec4(float(0.5).add(float(0.5).mul(rainbowFloat.xxxx)))
 
-  const colorNode = mix(
-    multiplyRgbByAlpha(color1),
-    multiplyRgbByAlpha(color2),
-    adjusted
-  )
+  const colorNode = mix(multiplyRgbByAlpha(color1), multiplyRgbByAlpha(color2), adjusted)
 
   return {
     uniforms: { scale, time, color1, color2 },

@@ -128,18 +128,8 @@ const ImpactMaterial = () => {
     }
   })
 
-  const circleColorVec = new Vector4(
-    circleColor.r / 255,
-    circleColor.g / 255,
-    circleColor.b / 255,
-    circleColor.a
-  )
-  const vesicaColorVec = new Vector4(
-    vesicaColor.r / 255,
-    vesicaColor.g / 255,
-    vesicaColor.b / 255,
-    vesicaColor.a
-  )
+  const circleColorVec = new Vector4(circleColor.r / 255, circleColor.g / 255, circleColor.b / 255, circleColor.a)
+  const vesicaColorVec = new Vector4(vesicaColor.r / 255, vesicaColor.g / 255, vesicaColor.b / 255, vesicaColor.a)
 
   const { uniforms, nodes } = useMemo(
     () =>

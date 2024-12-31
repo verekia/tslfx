@@ -1,24 +1,10 @@
 import { Vector4 } from 'three'
-import {
-  vec2,
-  vec3,
-  vec4,
-  dot,
-  abs,
-  max,
-  uniform,
-  float,
-  floor,
-  step,
-  min,
-  mix,
-} from 'three/tsl'
+import { vec2, vec3, vec4, dot, abs, max, uniform, float, floor, step, min, mix } from 'three/tsl'
 import { multiplyRgbByAlpha, taylorInvSqrt, uvCenter } from './util'
 
 // https://github.com/stegu/webgl-noise
 
-const mod289 = (x: ReturnType<typeof vec3 | typeof vec4>) =>
-  x.sub(floor(x.mul(1 / 289)).mul(289))
+const mod289 = (x: ReturnType<typeof vec3 | typeof vec4>) => x.sub(floor(x.mul(1 / 289)).mul(289))
 
 const permute = (x: ReturnType<typeof vec4>) => mod289(x.mul(34).add(10).mul(x))
 
@@ -79,24 +65,17 @@ const snoise = (v: ReturnType<typeof vec3>) => {
   let p2 = vec3(a1.xy, h.z)
   let p3 = vec3(a1.zw, h.w)
 
-  const norm = taylorInvSqrt(
-    vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3))
-  )
+  const norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)))
 
   p0 = p0.mul(norm.x)
   p1 = p1.mul(norm.y)
   p2 = p2.mul(norm.z)
   p3 = p3.mul(norm.w)
 
-  let m: ReturnType<typeof vec4> = max(
-    float(0.5).sub(vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3))),
-    0
-  )
+  let m: ReturnType<typeof vec4> = max(float(0.5).sub(vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3))), 0)
   m = m.mul(m)
 
-  return float(105).mul(
-    dot(m.mul(m), vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)))
-  )
+  return float(105).mul(dot(m.mul(m), vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3))))
 }
 
 type SimplexNoise3DParams = {
@@ -115,10 +94,8 @@ const defaultParams: Required<SimplexNoise3DParams> = {
   octaves: 0,
 }
 
-const getFloatValue = (
-  xy: ReturnType<typeof vec2>,
-  time: ReturnType<typeof float>
-) => float(0.7).mul(snoise(vec3(xy, float(0.3).mul(time))))
+const getFloatValue = (xy: ReturnType<typeof vec2>, time: ReturnType<typeof float>) =>
+  float(0.7).mul(snoise(vec3(xy, float(0.3).mul(time))))
 
 export const simplexNoise3D = (params: SimplexNoise3DParams) => {
   const p = { ...defaultParams, ...params }
@@ -149,11 +126,7 @@ export const simplexNoise3D = (params: SimplexNoise3DParams) => {
 
   const adjusted = vec4(float(0.5).add(float(0.5).mul(grayscaleFloat)))
 
-  const colorNode = mix(
-    multiplyRgbByAlpha(color1),
-    multiplyRgbByAlpha(color2),
-    adjusted
-  )
+  const colorNode = mix(multiplyRgbByAlpha(color1), multiplyRgbByAlpha(color2), adjusted)
 
   return {
     uniforms: { scale, time, color1, color2 },
