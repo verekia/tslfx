@@ -1,17 +1,9 @@
 import { Vector2, Vector4 } from 'three'
-import {
-  uv,
-  uniform,
-  mix,
-  vec4,
-  smoothstep,
-  float,
-  select,
-  type ShaderNodeObject,
-} from 'three/tsl'
+import { uv, uniform, mix, vec4, smoothstep, float, select } from 'three/tsl'
+
 import { sdCircle } from './sdf/circle'
-import { Node } from 'three/webgpu'
 import { easeInCubic, easeInOutCubic, easeOutCubic, linear } from './easing'
+import { multiplyRgbByAlpha } from './util'
 
 type ShapeParams = {
   startSize?: number
@@ -34,9 +26,6 @@ type ShapeParams = {
   // rotating?: boolean
   proportional?: boolean
 }
-
-const multiplyRgbByAlpha = (color: ShaderNodeObject<Node>) =>
-  vec4(color.xyz.mul(color.w), color.w)
 
 const defaultParams: Required<ShapeParams> = {
   startSize: 1,

@@ -1,13 +1,6 @@
-import {
-  uniform,
-  uv,
-  mix,
-  rotate,
-  vec4,
-  type ShaderNodeObject,
-} from 'three/tsl'
+import { uniform, uv, mix, rotate } from 'three/tsl'
 import { Vector4 } from 'three'
-import type { UniformNode } from 'three/webgpu'
+import { multiplyRgbByAlpha } from './util'
 
 type GradientParams = {
   color1?: Vector4
@@ -21,9 +14,6 @@ const defaultParams: Required<GradientParams> = {
   rotation: 0,
 }
 
-const premultiplyRgba = (color: ShaderNodeObject<UniformNode<Vector4>>) =>
-  vec4(color.xyz.mul(color.w), color.w)
-
 export const gradient = (params: GradientParams = {}) => {
   const p = { ...defaultParams, ...params }
 
@@ -33,8 +23,8 @@ export const gradient = (params: GradientParams = {}) => {
 
   const rotatedUV = rotate(uv().sub(0.5), rotation).add(0.5)
   const colorNode = mix(
-    premultiplyRgba(color1),
-    premultiplyRgba(color2),
+    multiplyRgbByAlpha(color1),
+    multiplyRgbByAlpha(color2),
     rotatedUV.y
   )
 

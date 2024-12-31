@@ -13,9 +13,8 @@ import {
   step,
   min,
   mix,
-  type ShaderNodeObject,
 } from 'three/tsl'
-import { UniformNode } from 'three/webgpu'
+import { multiplyRgbByAlpha } from './util'
 
 // https://github.com/stegu/webgl-noise
 
@@ -104,9 +103,6 @@ const snoise = (v: ReturnType<typeof vec3>) => {
   )
 }
 
-const premultiplyRgba = (color: ShaderNodeObject<UniformNode<Vector4>>) =>
-  vec4(color.xyz.mul(color.w), color.w)
-
 type SimplexNoise3DParams = {
   color1?: Vector4
   color2?: Vector4
@@ -158,8 +154,8 @@ export const simplexNoise3D = (params: SimplexNoise3DParams) => {
   const adjusted = vec4(float(0.5).add(float(0.5).mul(grayscaleFloat)))
 
   const colorNode = mix(
-    premultiplyRgba(color1),
-    premultiplyRgba(color2),
+    multiplyRgbByAlpha(color1),
+    multiplyRgbByAlpha(color2),
     adjusted
   )
 

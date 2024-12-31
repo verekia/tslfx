@@ -7,13 +7,9 @@ import {
   uniform,
   float,
   mix,
-  ShaderNodeObject,
   mx_noise_vec3,
 } from 'three/tsl'
-import { UniformNode } from 'three/webgpu'
-
-const premultiplyRgba = (color: ShaderNodeObject<UniformNode<Vector4>>) =>
-  vec4(color.xyz.mul(color.w), color.w)
+import { multiplyRgbByAlpha } from './util'
 
 type WaterParams = {
   color1?: Vector4
@@ -66,8 +62,8 @@ export const water = (params: WaterParams) => {
   const adjusted = vec4(float(0.5).add(float(0.5).mul(rainbowFloat.xxxx)))
 
   const colorNode = mix(
-    premultiplyRgba(color1),
-    premultiplyRgba(color2),
+    multiplyRgbByAlpha(color1),
+    multiplyRgbByAlpha(color2),
     adjusted
   )
 

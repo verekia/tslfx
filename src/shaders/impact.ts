@@ -1,6 +1,5 @@
 import { Vector4 } from 'three'
 import {
-  vec4,
   uv,
   uniform,
   type ShaderNodeObject,
@@ -13,9 +12,7 @@ import {
 import type { UniformNode } from 'three/webgpu'
 import { sdCircle } from './sdf/circle'
 import { sdVesica } from './sdf/vesica'
-
-const premultiplyRgba = (color: ShaderNodeObject<UniformNode<Vector4>>) =>
-  vec4(color.xyz.mul(color.w), color.w)
+import { multiplyRgbByAlpha } from './util'
 
 export type ImpactParams = {
   circleColor?: Vector4
@@ -68,7 +65,7 @@ export const impact = (params: ImpactParams) => {
     .abs()
     .step(thickness)
     .toVec4()
-    .mul(premultiplyRgba(cCol))
+    .mul(multiplyRgbByAlpha(cCol))
 
   const createVesica = (
     pos: ReturnType<typeof vec2>,
@@ -83,7 +80,7 @@ export const impact = (params: ImpactParams) => {
     const vesica = sdVesica(rotatedPForVesica, vesicaR, vesicaD)
       .step(0.01)
       .toVec4()
-      .mul(premultiplyRgba(vCol))
+      .mul(multiplyRgbByAlpha(vCol))
     return vesica
   }
 
