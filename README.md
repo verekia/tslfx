@@ -75,6 +75,7 @@ const ImpactVFX = () => {
 - ⭕️ [Pulsing Ring](https://tslfx.v1v2.io/pulsing-ring)
 - 🌈 [Gradient](https://tslfx.v1v2.io/gradient)
 - 💧 [Water](https://tslfx.v1v2.io/water) (simplex noise)
+- 🟠 [Shape](https://tslfx.v1v2.io/shape) (more shapes will be added)
 
 ## SDFs
 
@@ -88,6 +89,12 @@ const vesica = sdVesica(p, 0.5, 0.2)
 const heart = sdHeart(p)
 ```
 
+## Timing-based animations
+
+The [Timing](https://tslfx.v1v2.io/timing) example shows how to combine multiple effects triggered at different times over a given duration, with delays and durations per effect.
+
+All the effects have a normalized `time` uniform and a duration of `1`, and their timing is relative to the whole animation, making it easier to tweak them all at once and create slow-motion or speed-up effects.
+
 ## Utils
 
 ### `pipe`
@@ -95,11 +102,11 @@ const heart = sdHeart(p)
 TSL functions that take 2 nodes as arguments can be piped together into a single expression without introducing extra variables or reassignments:
 
 ```js
-import { blendColor } from 'three/tsl'
-import { pipe } from 'tslfx'
+import { blendAlpha, pipe } from 'tslfx'
 
+// Simple layering of 3 effects on top of each other
 const colorNode = pipe(
-  blendColor,
+  blendAlpha,
   effectA.colorNode,
   effectB.colorNode,
   effectC.colorNode
@@ -107,6 +114,16 @@ const colorNode = pipe(
 ```
 
 `pipe` is really just a more readable `.reduce()` of the arguments, nothing fancy.
+
+### `blendAlpha`
+
+`blendAlpha` blends two colors together using the alpha channel of the second color.
+
+```js
+import { blendAlpha } from 'tslfx'
+
+const colorNode = blendAlpha(effectA.colorNode, effectB.colorNode)
+```
 
 ## Noise
 

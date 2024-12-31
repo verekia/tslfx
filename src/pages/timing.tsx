@@ -1,11 +1,10 @@
 import Page from '@/components/Page'
-import { pipe } from '@/shaders'
+import { blendAlpha, pipe } from '@/shaders'
 import { shape } from '@/shaders/shape'
 import { useFrame } from '@react-three/fiber'
 import { useControls } from 'leva'
 import { useEffect, useMemo, useRef } from 'react'
 import { Vector2, Vector4 } from 'three'
-import { mix } from 'three/tsl'
 import { UniformNode } from 'three/webgpu'
 
 const clamp = (value: number, min: number, max: number) =>
@@ -186,7 +185,7 @@ const TripleExplosionMaterial = () => {
   const combined = useMemo(
     () =>
       pipe(
-        (a, b) => mix(a, b, b.w),
+        blendAlpha,
         blow3.nodes.colorNode,
         explosion3.nodes.colorNode,
         blow2.nodes.colorNode,

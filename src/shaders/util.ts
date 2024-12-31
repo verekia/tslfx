@@ -1,4 +1,4 @@
-import { dot, float, uv, vec4, type ShaderNodeObject } from 'three/tsl'
+import { dot, float, mix, uv, vec4, type ShaderNodeObject } from 'three/tsl'
 import type { Node, UniformNode } from 'three/webgpu'
 
 export const pipe = (
@@ -11,6 +11,11 @@ export const pipe = (
 ) => {
   return moreNodes.reduce((acc, node) => fn(acc, node), firstNode)
 }
+
+export const blendAlpha = (
+  a: ShaderNodeObject<Node>,
+  b: ShaderNodeObject<Node>
+) => mix(a, b, b.w)
 
 export const multiplyRgbByAlpha = (
   color: ShaderNodeObject<Node> | ShaderNodeObject<UniformNode<unknown>>
