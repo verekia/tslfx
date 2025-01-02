@@ -1,6 +1,6 @@
 import { Vector4 } from 'three'
 import { uniform, type ShaderNodeObject, vec2, float, rotate, PI, hash } from 'three/tsl'
-import type { UniformNode } from 'three/webgpu'
+import type { IndexNode, UniformNode } from 'three/webgpu'
 import { sdCircle } from './sdf/circle'
 import { sdVesica } from './sdf/vesica'
 import { multiplyRgbByAlpha, uvCenterNdc } from './util'
@@ -17,9 +17,10 @@ export type ImpactParams = {
   circleSizeStart?: number
   circleSizeEnd?: number
   circleThickness?: number
+  instanceIndex?: ShaderNodeObject<IndexNode> | undefined
 }
 
-const defaultParams: Required<ImpactParams> = {
+const defaultParams: Required<Omit<ImpactParams, 'instanceIndex'>> = {
   time: 0,
   aspect: 1,
   rotation: 0,
@@ -47,6 +48,9 @@ export const impact = (params: ImpactParams) => {
   const cse = uniform(par.circleSizeEnd)
   const ct = uniform(par.circleThickness)
 
+  // const seedAndIndex = select(par.instanceIndex.toFloat().greaterThan(0), seed, seed.add(par.instanceIndex.toFloat()))
+  const seedAndIndex = seed.add(par.instanceIndex ? par.instanceIndex.toFloat() : 0)
+
   const p = uvCenterNdc().mul(vec2(a, 1))
 
   const radius = t.pow(0.5)
@@ -69,7 +73,7 @@ export const impact = (params: ImpactParams) => {
   let result = circle
 
   for (let i = 0; i < par.vesicaCount; i++) {
-    result = result.add(createVesica(p, seed.add(i)))
+    result = result.add(createVesica(p, seedAndIndex.add(i)))
   }
 
   const colorNode = result

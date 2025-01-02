@@ -4,7 +4,7 @@ import { LevaRootProps } from 'leva/dist/declarations/src/components/Leva/LevaRo
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, type ReactNode } from 'react'
-import { Environment, OrbitControls } from '@react-three/drei'
+import { Environment, OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import { setStore, useStoreValue } from '@/lib/store'
 import PlaneScene from './PlaneScene'
 
@@ -61,12 +61,6 @@ const Page = ({
           <Link href="/gradient">
             <li>Gradient</li>
           </Link>
-          {/* <Link href="/simplex3d">
-          <li>Simplex 3D</li>
-          </Link>
-          <Link href="/simplex2d">
-          <li>Simplex 2D</li>
-          </Link> */}
           <Link href="/water">
             <li>Water</li>
           </Link>
@@ -87,22 +81,22 @@ const Page = ({
           <>
             <Canvas>
               {env && <Environment preset="park" background />}
-              <OrbitControls />
+              <OrbitControls>
+                <PerspectiveCamera makeDefault position={is2D ? [0, 0, 7] : [0, 3, 5]} />
+              </OrbitControls>
               {is2D ? <PlaneScene>{children}</PlaneScene> : children}
             </Canvas>
             <Leva titleBar={{ title, filter: false }} {...levaProps} />
           </>
         )}
-        <div
-          className={`fixed bottom-0 left-0 z-50 flex gap-3 p-2 [&>*]:bg-black [&>*]:rounded-md [&>*]:px-2 [&>*]:py-1 ${dark ? 'text-white' : 'text-black'}`}
-        >
+        <div className="fixed bottom-0 left-0 z-50 flex gap-3 p-2 [&>*]:bg-black [&>*]:rounded-md [&>*]:px-2 [&>*]:py-1 text-white">
           <button onClick={() => setStore('dark', !dark)}>{dark ? 'Dark' : 'Light'} mode</button>
           {is2D && (
             <button onClick={() => setStore('boundsPlane', !boundsPlane)}>
               {boundsPlane ? 'Hide' : 'Show'} Bounds
             </button>
           )}
-          <button onClick={() => setStore('env', !env)}>{env ? 'Hide' : 'Show'} Env</button>
+          {children && <button onClick={() => setStore('env', !env)}>{env ? 'Hide' : 'Show'} Env</button>}
         </div>
       </div>
     </>
