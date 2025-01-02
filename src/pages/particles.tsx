@@ -5,6 +5,8 @@ import { useMemo } from 'react'
 import { AdditiveBlending, Vector4 } from 'three'
 import { cos, range, sin, vec3, instanceIndex, time } from 'three/tsl'
 
+const instanceCount = 300
+
 const ParticlesMaterial = () => {
   const { uTime, nodes } = useMemo(() => {
     const impactShader = impact({
@@ -14,6 +16,7 @@ const ParticlesMaterial = () => {
       vesicaColor: new Vector4(0, 0.7, 1, 1),
       instanceIndex,
       vesicaCount: 2,
+      instanceCount,
     })
 
     const basePosition = vec3(
@@ -36,14 +39,11 @@ const ParticlesMaterial = () => {
   }, [])
 
   useFrame((_, delta) => {
-    uTime.value += delta * 0.5
-    if (uTime.value > 1) {
-      uTime.value = 0
-    }
+    uTime.value += delta * 0.2
   })
 
   return (
-    <instancedMesh args={[, , 300]}>
+    <instancedMesh args={[, , instanceCount]}>
       <planeGeometry />
       <spriteNodeMaterial {...nodes} transparent blending={AdditiveBlending} depthWrite={false} />
     </instancedMesh>

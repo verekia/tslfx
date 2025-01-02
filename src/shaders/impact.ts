@@ -18,9 +18,10 @@ export type ImpactParams = {
   circleSizeEnd?: number
   circleThickness?: number
   instanceIndex?: ShaderNodeObject<IndexNode> | undefined
+  instanceCount?: number
 }
 
-const defaultParams: Required<Omit<ImpactParams, 'instanceIndex'>> = {
+const defaultParams: Required<Omit<ImpactParams, 'instanceIndex' | 'instanceCount'>> = {
   time: 0,
   aspect: 1,
   rotation: 0,
@@ -48,12 +49,16 @@ export const impact = (params: ImpactParams) => {
   const cse = uniform(par.circleSizeEnd)
   const ct = uniform(par.circleThickness)
 
-  // const seedAndIndex = select(par.instanceIndex.toFloat().greaterThan(0), seed, seed.add(par.instanceIndex.toFloat()))
   const seedAndIndex = seed.add(par.instanceIndex ? par.instanceIndex.toFloat() : 0)
 
   const p = uvCenterNdc().mul(vec2(a, 1))
 
-  const radius = t.pow(0.5)
+  const tWithOffset =
+    par.instanceIndex && par.instanceCount
+      ? t.add(par.instanceIndex.toFloat().div(par.instanceCount).mul(0.3)).mod(1)
+      : t
+
+  const radius = tWithOffset.pow(0.5)
   const thickness = ct.mul(0.5)
   const circleSize = css.add(cse.sub(css).mul(radius)).sub(thickness)
   const circle = sdCircle(p, circleSize).abs().step(thickness).toVec4().mul(multiplyRgbByAlpha(cCol))
@@ -62,10 +67,10 @@ export const impact = (params: ImpactParams) => {
     pos: ReturnType<typeof vec2>,
     se: ShaderNodeObject<UniformNode<number>> | ReturnType<typeof float>
   ) => {
-    const vesicaR = float(1).mul(t.oneMinus().mul(t).mul(2))
-    const vesicaD = float(0.8).mul(t.oneMinus().mul(t).mul(2))
+    const vesicaR = float(1).mul(tWithOffset.oneMinus().mul(tWithOffset).mul(2))
+    const vesicaD = float(0.8).mul(tWithOffset.oneMinus().mul(tWithOffset).mul(2))
 
-    const rotatedPForVesica = rotate(pos, hash(se).mul(2).sub(1).mul(PI)).add(vec2(0, t.mul(0.9)))
+    const rotatedPForVesica = rotate(pos, hash(se).mul(2).sub(1).mul(PI)).add(vec2(0, tWithOffset.mul(0.9)))
     const vesica = sdVesica(rotatedPForVesica, vesicaR, vesicaD).step(0.01).toVec4().mul(multiplyRgbByAlpha(vCol))
     return vesica
   }
