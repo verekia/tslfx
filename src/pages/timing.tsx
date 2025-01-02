@@ -210,7 +210,7 @@ const TripleExplosionMaterial = () => {
 }
 
 const MultiPage = () => (
-  <Page title="Timing">
+  <Page title="Timing" is2D>
     <TripleExplosionMaterial />
   </Page>
 )

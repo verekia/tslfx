@@ -53,7 +53,7 @@ const TemplateMaterial = () => {
 }
 
 const TemplatePage = () => (
-  <Page title="Template">
+  <Page title="Template" is2D>
     <TemplateMaterial />
   </Page>
 )

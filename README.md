@@ -151,4 +151,5 @@ const colorNode = mix(blue, lightBlue, adjustedNoise)
 ## Resources
 
 - [GLSL to TSL transpiler](https://threejs.org/examples/?q=webgpu#webgpu_tsl_transpiler)
+- [TSL Editor](https://threejs.org/examples/?q=tsl#webgpu_tsl_editor)
 - [TSL examples](https://threejs.org/examples/?q=tsl)

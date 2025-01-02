@@ -26,7 +26,7 @@ const GradientMaterial = () => {
 }
 
 const GradientPage = () => (
-  <Page title="Gradient">
+  <Page title="Gradient" is2D>
     <GradientMaterial />
   </Page>
 )

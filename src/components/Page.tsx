@@ -4,8 +4,25 @@ import { LevaRootProps } from 'leva/dist/declarations/src/components/Leva/LevaRo
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, type ReactNode } from 'react'
+import { Environment, OrbitControls } from '@react-three/drei'
+import { setStore, useStoreValue } from '@/lib/store'
+import PlaneScene from './PlaneScene'
 
-const Page = ({ title, levaProps, children }: { title?: string; levaProps?: LevaRootProps; children?: ReactNode }) => {
+const Page = ({
+  title,
+  levaProps,
+  children,
+  is2D = false,
+}: {
+  title?: string
+  levaProps?: LevaRootProps
+  children?: ReactNode
+  is2D?: boolean
+}) => {
+  const dark = useStoreValue('dark')
+  const boundsPlane = useStoreValue('boundsPlane')
+  const env = useStoreValue('env')
+
   useEffect(() => {
     return () => {
       levaStore.dispose()
@@ -17,8 +34,8 @@ const Page = ({ title, levaProps, children }: { title?: string; levaProps?: Leva
       <Head>
         <title>{title ? `${title} | TSLFX` : 'TSLFX | TSL VFX Library'}</title>
       </Head>
-      <div className="h-screen bg-[#eee]">
-        <ul className="fixed top-0 left-0 z-50 flex flex-wrap gap-2 p-2 [&>*]:text-sm [&>*]:text-white [&>*]:bg-black [&>*]:rounded-md [&>*]:px-2 [&>*]:py-1 [&>*]:hover:bg-gray-800">
+      <div className={`h-screen ${dark ? 'bg-[#333]' : 'bg-[#f0f0f0]'}`}>
+        <ul className="fixed top-0 left-0 z-50 flex flex-wrap gap-2 p-2 [&>*]:text-sm [&>*]:text-white [&>*]:bg-black [&>*]:rounded-md [&>*]:px-2 [&>*]:py-1">
           <Link href="/" className="content-center">
             <li>TSLFX</li>
           </Link>
@@ -37,6 +54,9 @@ const Page = ({ title, levaProps, children }: { title?: string; levaProps?: Leva
           </Link>
           <Link href="/shape">
             <li>Shape</li>
+          </Link>
+          <Link href="/particles">
+            <li>Particles</li>
           </Link>
           <Link href="/gradient">
             <li>Gradient</li>
@@ -66,18 +86,24 @@ const Page = ({ title, levaProps, children }: { title?: string; levaProps?: Leva
         {children && (
           <>
             <Canvas>
-              <mesh scale={5}>
-                <planeGeometry />
-                {children}
-              </mesh>
-              <mesh scale={5} position-z={-0.01}>
-                <planeGeometry />
-                <meshBasicNodeMaterial color="black" transparent opacity={0.03} />
-              </mesh>
+              {env && <Environment preset="park" background />}
+              <OrbitControls />
+              {is2D ? <PlaneScene>{children}</PlaneScene> : children}
             </Canvas>
             <Leva titleBar={{ title, filter: false }} {...levaProps} />
           </>
         )}
+        <div
+          className={`fixed bottom-0 left-0 z-50 flex gap-3 p-2 [&>*]:bg-black [&>*]:rounded-md [&>*]:px-2 [&>*]:py-1 ${dark ? 'text-white' : 'text-black'}`}
+        >
+          <button onClick={() => setStore('dark', !dark)}>{dark ? 'Dark' : 'Light'} mode</button>
+          {is2D && (
+            <button onClick={() => setStore('boundsPlane', !boundsPlane)}>
+              {boundsPlane ? 'Hide' : 'Show'} Bounds
+            </button>
+          )}
+          <button onClick={() => setStore('env', !env)}>{env ? 'Hide' : 'Show'} Env</button>
+        </div>
       </div>
     </>
   )

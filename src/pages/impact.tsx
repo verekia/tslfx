@@ -182,7 +182,7 @@ const ImpactMaterial = () => {
 }
 
 const ImpactPage = () => (
-  <Page title="Impact" levaProps={{ theme: { sizes: { rootWidth: '310px' } } }}>
+  <Page title="Impact" levaProps={{ theme: { sizes: { rootWidth: '310px' } } }} is2D>
     <ImpactMaterial />
   </Page>
 )

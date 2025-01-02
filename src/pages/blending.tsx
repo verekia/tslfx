@@ -58,7 +58,7 @@ const BlendingMaterial = () => {
 }
 
 const BlendingPage = () => (
-  <Page title="Blending">
+  <Page title="Blending" is2D>
     <BlendingMaterial />
   </Page>
 )

@@ -55,7 +55,7 @@ const Simplex3DMaterial = () => {
 }
 
 const Simplex3DPage = () => (
-  <Page title="Simplex 3D">
+  <Page title="Simplex 3D" is2D>
     <Simplex3DMaterial />
   </Page>
 )

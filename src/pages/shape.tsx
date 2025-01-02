@@ -167,7 +167,7 @@ const ShapeMaterial = () => {
 }
 
 const ShapePage = () => (
-  <Page title="Shape" levaProps={{ theme: { sizes: { rootWidth: '310px' } } }}>
+  <Page title="Shape" levaProps={{ theme: { sizes: { rootWidth: '310px' } } }} is2D>
     <ShapeMaterial />
   </Page>
 )

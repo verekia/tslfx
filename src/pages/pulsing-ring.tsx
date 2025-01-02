@@ -57,7 +57,7 @@ const PulsingRingMaterial = () => {
 }
 
 const PulsingRingPage = () => (
-  <Page title="Pulsing Ring" levaProps={{ theme: { sizes: { rootWidth: '320px' } } }}>
+  <Page title="Pulsing Ring" levaProps={{ theme: { sizes: { rootWidth: '320px' } } }} is2D>
     <PulsingRingMaterial />
   </Page>
 )

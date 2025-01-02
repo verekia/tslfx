@@ -55,7 +55,7 @@ const WaterMaterial = () => {
 }
 
 const WaterPage = () => (
-  <Page title="Water">
+  <Page title="Water" is2D>
     <WaterMaterial />
   </Page>
 )

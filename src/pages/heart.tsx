@@ -17,7 +17,7 @@ const colorNode = mix(bgColor, heartColor, heart)
 const HeartMaterial = () => <meshBasicNodeMaterial colorNode={colorNode} />
 
 const HeartPage = () => (
-  <Page title="Heart">
+  <Page title="Heart" is2D>
     <HeartMaterial />
   </Page>
 )
