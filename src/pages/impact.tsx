@@ -3,7 +3,7 @@ import { impact } from '@/shaders'
 import { ImpactParams } from '@/shaders/impact'
 import { useFrame } from '@react-three/fiber'
 import { button, folder, useControls } from 'leva'
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { Vector4 } from 'three'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
 
@@ -114,8 +114,6 @@ const ImpactMaterial = () => {
         circleSizeStart: { value: 0, min: 0, max: 1, step: 0.01 },
         circleSizeEnd: { value: 0.6, min: 0, max: 1, step: 0.01 },
         circleThickness: { value: 0.13, min: 0, max: 1, step: 0.01 },
-      }),
-      'Static parameters': folder({
         vesicaCount: {
           value: defaultParams.vesicaCount,
           min: 1,
@@ -143,14 +141,8 @@ const ImpactMaterial = () => {
         circleSizeEnd,
         circleThickness,
       }),
-    [vesicaCount]
+    []
   )
-
-  useEffect(() => {
-    if (materialRef.current) {
-      materialRef.current.needsUpdate = true
-    }
-  }, [vesicaCount])
 
   useFrame((_, delta) => {
     if (!autoplay) return
@@ -177,6 +169,7 @@ const ImpactMaterial = () => {
   uniforms.circleSizeStart.value = circleSizeStart
   uniforms.circleSizeEnd.value = circleSizeEnd
   uniforms.circleThickness.value = circleThickness
+  uniforms.vesicaCount.value = vesicaCount
 
   return <meshBasicNodeMaterial ref={materialRef} {...nodes} transparent />
 }
