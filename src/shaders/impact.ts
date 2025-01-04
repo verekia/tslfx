@@ -5,64 +5,55 @@ import { sdCircle } from './sdf/circle'
 import { sdVesica } from './sdf/vesica'
 import { multiplyRgbByAlpha, uvCenterNdc } from './util'
 
-export type ImpactParams = {
-  circleColor?: Vector4
-  vesicaColor?: Vector4
-  time?: number
-  aspect?: number
-  rotation?: number
-  duration?: number
-  seed?: number
-  vesicaCount?: number
-  circleSizeStart?: number
-  circleSizeEnd?: number
-  circleThickness?: number
-  instanceIndex?: ShaderNodeObject<IndexNode> | undefined
-  instanceCount?: number
-}
-
-const defaultParams: Required<Omit<ImpactParams, 'instanceIndex' | 'instanceCount'>> = {
+export const defaultImpactUniforms = {
   time: 0,
   aspect: 1,
-  rotation: 0,
   circleColor: new Vector4(0, 0, 0, 1),
   vesicaColor: new Vector4(1, 1, 1, 1),
   duration: 1,
   seed: 0,
-  vesicaCount: 3, // Requires recompilation
-  circleSizeStart: 0.5,
+  vesicaCount: 5,
+  circleSizeStart: 0,
   circleSizeEnd: 1,
   circleThickness: 0.2,
 }
 
-export const impact = (params: ImpactParams) => {
-  const par = { ...defaultParams, ...params }
+export type ImpactUniforms = typeof defaultImpactUniforms
 
-  const t = uniform(par.time)
-  const a = uniform(par.aspect)
-  const r = uniform(par.rotation)
-  const cCol = uniform(par.circleColor)
-  const vCol = uniform(par.vesicaColor)
-  const d = uniform(par.duration)
-  const seed = uniform(par.seed)
-  const css = uniform(par.circleSizeStart)
-  const cse = uniform(par.circleSizeEnd)
-  const ct = uniform(par.circleThickness)
-  const vc = uniform(par.vesicaCount)
+export type ImpactOptions = {
+  instanceIndex?: ShaderNodeObject<IndexNode>
+  instanceCount?: number
+}
 
-  const seedAndIndex = seed.add(par.instanceIndex ? par.instanceIndex.toFloat() : 0)
+export const impact = (uniforms: Partial<ImpactUniforms> = {}, options: ImpactOptions = {}) => {
+  const init = { ...defaultImpactUniforms, ...uniforms }
 
-  const p = uvCenterNdc().mul(vec2(a, 1))
+  const u = {
+    time: uniform(init.time),
+    aspect: uniform(init.aspect),
+    circleColor: uniform(init.circleColor),
+    vesicaColor: uniform(init.vesicaColor),
+    duration: uniform(init.duration),
+    seed: uniform(init.seed),
+    circleSizeStart: uniform(init.circleSizeStart),
+    circleSizeEnd: uniform(init.circleSizeEnd),
+    circleThickness: uniform(init.circleThickness),
+    vesicaCount: uniform(init.vesicaCount),
+  }
+
+  const seedAndIndex = u.seed.add(options.instanceIndex ? options.instanceIndex.toFloat() : 0)
+
+  const position = uvCenterNdc().mul(vec2(u.aspect, 1))
 
   const tWithOffset =
-    par.instanceIndex && par.instanceCount
-      ? t.add(par.instanceIndex.toFloat().div(par.instanceCount).mul(0.3)).mod(1)
-      : t
+    options.instanceIndex && options.instanceCount
+      ? u.time.add(options.instanceIndex.toFloat().div(options.instanceCount).mul(0.3)).mod(1)
+      : u.time
 
   const radius = tWithOffset.pow(0.5)
-  const thickness = ct.mul(0.5)
-  const circleSize = css.add(cse.sub(css).mul(radius)).sub(thickness)
-  const circle = sdCircle(p, circleSize).abs().step(thickness).toVec4().mul(multiplyRgbByAlpha(cCol))
+  const thickness = u.circleThickness.mul(0.5)
+  const circleSize = u.circleSizeStart.add(u.circleSizeEnd.sub(u.circleSizeStart).mul(radius)).sub(thickness)
+  const circle = sdCircle(position, circleSize).abs().step(thickness).toVec4().mul(multiplyRgbByAlpha(u.circleColor))
 
   const createVesica = (
     pos: ReturnType<typeof vec2>,
@@ -72,31 +63,19 @@ export const impact = (params: ImpactParams) => {
     const vesicaD = float(0.8).mul(tWithOffset.oneMinus().mul(tWithOffset).mul(2))
 
     const rotatedPForVesica = rotate(pos, hash(se).mul(2).sub(1).mul(PI)).add(vec2(0, tWithOffset.mul(0.9)))
-    const vesica = sdVesica(rotatedPForVesica, vesicaR, vesicaD).step(0.01).toVec4().mul(multiplyRgbByAlpha(vCol))
+    const vesica = sdVesica(rotatedPForVesica, vesicaR, vesicaD)
+      .step(0.01)
+      .toVec4()
+      .mul(multiplyRgbByAlpha(u.vesicaColor))
     return vesica
   }
 
   const vesicas = Fn(() => {
     const result = vec4(0).toVar()
-    return Loop(vc, ({ i }: { i: number }) => result.addAssign(createVesica(p, seedAndIndex.add(i))))
+    return Loop(u.vesicaCount, ({ i }: { i: number }) => result.addAssign(createVesica(position, seedAndIndex.add(i))))
   })()
 
   const colorNode = circle.add(vesicas)
 
-  return {
-    uniforms: {
-      time: t,
-      aspect: a,
-      rotation: r,
-      circleColor: cCol,
-      vesicaColor: vCol,
-      duration: d,
-      seed,
-      circleSizeStart: css,
-      circleSizeEnd: cse,
-      circleThickness: ct,
-      vesicaCount: vc,
-    },
-    nodes: { colorNode },
-  }
+  return { uniforms: u, nodes: { colorNode } }
 }

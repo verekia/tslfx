@@ -9,15 +9,16 @@ const instanceCount = 300
 
 const ParticlesMaterial = () => {
   const { uTime, nodes } = useMemo(() => {
-    const impactShader = impact({
-      circleSizeEnd: 0,
-      circleSizeStart: 0.2,
-      circleColor: new Vector4(1, 0.7, 0, 1),
-      vesicaColor: new Vector4(0, 0.7, 1, 1),
-      instanceIndex,
-      vesicaCount: 2,
-      instanceCount,
-    })
+    const impactShader = impact(
+      {
+        circleSizeEnd: 0,
+        circleSizeStart: 0.2,
+        circleColor: new Vector4(1, 0.7, 0, 1),
+        vesicaColor: new Vector4(0, 0.7, 1, 1),
+        vesicaCount: 2,
+      },
+      { instanceIndex, instanceCount }
+    )
 
     const basePosition = vec3(
       cos(instanceIndex.toFloat()).mul(2),

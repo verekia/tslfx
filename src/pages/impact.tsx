@@ -1,19 +1,24 @@
 import Page from '@/components/Page'
-import { impact } from '@/shaders'
-import { ImpactParams } from '@/shaders/impact'
+import { defaultImpactUniforms, impact } from '@/shaders'
+import type { ImpactUniforms } from '@/shaders/impact'
 import { useFrame } from '@react-three/fiber'
 import { button, folder, useControls } from 'leva'
+import type { ButtonInput } from 'leva/dist/declarations/src/types'
 import { useMemo, useRef } from 'react'
 import { Vector4 } from 'three'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
 
-const impactPresets = [
+type Preset = { name: string; uniforms: ImpactUniforms }
+
+const impactPresets: Preset[] = [
   {
-    name: 'Default',
-    params: {
+    name: 'Smash',
+    uniforms: {
+      ...defaultImpactUniforms,
       circleColor: new Vector4(1, 0.1, 0, 1),
       vesicaColor: new Vector4(1, 0.6, 0, 1),
       vesicaCount: 6,
+      duration: 0.5,
       circleSizeStart: 0,
       circleSizeEnd: 0.6,
       circleThickness: 0.13,
@@ -21,7 +26,8 @@ const impactPresets = [
   },
   {
     name: 'Void Blast',
-    params: {
+    uniforms: {
+      ...defaultImpactUniforms,
       circleColor: new Vector4(0, 0, 0, 0.9),
       vesicaColor: new Vector4(0.1, 0, 1, 1),
       vesicaCount: 6,
@@ -33,7 +39,8 @@ const impactPresets = [
   },
   {
     name: 'Cherry Blossom',
-    params: {
+    uniforms: {
+      ...defaultImpactUniforms,
       circleColor: new Vector4(1, 0.8, 1, 1),
       vesicaColor: new Vector4(1, 0.4, 1, 1),
       vesicaCount: 10,
@@ -43,9 +50,17 @@ const impactPresets = [
       duration: 0.7,
     },
   },
-] satisfies { name: string; params: ImpactParams }[]
+  {
+    name: 'Default',
+    uniforms: {
+      ...defaultImpactUniforms,
+      circleColor: defaultImpactUniforms.circleColor.clone(),
+      vesicaColor: defaultImpactUniforms.vesicaColor.clone(),
+    },
+  },
+]
 
-const defaultParams = impactPresets[0].params
+const defaultUniforms = impactPresets[0].uniforms
 
 const ImpactMaterial = () => {
   const materialRef = useRef<MeshBasicNodeMaterial>(null)
@@ -64,27 +79,29 @@ const ImpactMaterial = () => {
     },
     setControls,
   ] = useControls(() => {
-    const presets: ImpactParams = Object.fromEntries(
+    const presets: Record<string, ButtonInput> = Object.fromEntries(
       impactPresets.map((preset) => [
         preset.name,
-        button(() =>
+        button(() => {
+          const { seed, aspect, ...rest } = preset.uniforms
           setControls({
-            ...preset.params,
+            ...rest,
             circleColor: {
-              r: preset.params.circleColor.x * 255,
-              g: preset.params.circleColor.y * 255,
-              b: preset.params.circleColor.z * 255,
-              a: preset.params.circleColor.w,
+              r: preset.uniforms.circleColor.x * 255,
+              g: preset.uniforms.circleColor.y * 255,
+              b: preset.uniforms.circleColor.z * 255,
+              a: preset.uniforms.circleColor.w,
             },
             vesicaColor: {
-              r: preset.params.vesicaColor.x * 255,
-              g: preset.params.vesicaColor.y * 255,
-              b: preset.params.vesicaColor.z * 255,
-              a: preset.params.vesicaColor.w,
+              r: preset.uniforms.vesicaColor.x * 255,
+              g: preset.uniforms.vesicaColor.y * 255,
+              b: preset.uniforms.vesicaColor.z * 255,
+              a: preset.uniforms.vesicaColor.w,
             },
             autoplay: true,
+            time: 0,
           })
-        ),
+        }),
       ])
     )
 
@@ -97,52 +114,35 @@ const ImpactMaterial = () => {
       Uniforms: folder({
         circleColor: {
           value: {
-            r: defaultParams.circleColor.x * 255,
-            g: defaultParams.circleColor.y * 255,
-            b: defaultParams.circleColor.z * 255,
-            a: defaultParams.circleColor.w,
+            r: defaultUniforms.circleColor.x * 255,
+            g: defaultUniforms.circleColor.y * 255,
+            b: defaultUniforms.circleColor.z * 255,
+            a: defaultUniforms.circleColor.w,
           },
         },
         vesicaColor: {
           value: {
-            r: defaultParams.vesicaColor.x * 255,
-            g: defaultParams.vesicaColor.y * 255,
-            b: defaultParams.vesicaColor.z * 255,
-            a: defaultParams.vesicaColor.w,
+            r: defaultUniforms.vesicaColor.x * 255,
+            g: defaultUniforms.vesicaColor.y * 255,
+            b: defaultUniforms.vesicaColor.z * 255,
+            a: defaultUniforms.vesicaColor.w,
           },
         },
-        circleSizeStart: { value: 0, min: 0, max: 1, step: 0.01 },
-        circleSizeEnd: { value: 0.6, min: 0, max: 1, step: 0.01 },
-        circleThickness: { value: 0.13, min: 0, max: 1, step: 0.01 },
+        circleSizeStart: { value: defaultUniforms.circleSizeStart, min: 0, max: 1, step: 0.01 },
+        circleSizeEnd: { value: defaultUniforms.circleSizeEnd, min: 0, max: 1, step: 0.01 },
+        circleThickness: { value: defaultUniforms.circleThickness, min: 0, max: 1, step: 0.01 },
         vesicaCount: {
-          value: defaultParams.vesicaCount,
-          min: 1,
+          value: defaultUniforms.vesicaCount,
+          min: 0,
           max: 15,
           step: 1,
         },
       }),
-      // @ts-expect-error
       Presets: folder(presets),
     }
   })
 
-  const circleColorVec = new Vector4(circleColor.r / 255, circleColor.g / 255, circleColor.b / 255, circleColor.a)
-  const vesicaColorVec = new Vector4(vesicaColor.r / 255, vesicaColor.g / 255, vesicaColor.b / 255, vesicaColor.a)
-
-  const { uniforms, nodes } = useMemo(
-    () =>
-      impact({
-        time: 0,
-        duration,
-        circleColor: circleColorVec,
-        vesicaColor: vesicaColorVec,
-        vesicaCount,
-        circleSizeStart,
-        circleSizeEnd,
-        circleThickness,
-      }),
-    []
-  )
+  const { uniforms, nodes } = useMemo(() => impact(), [])
 
   useFrame((_, delta) => {
     if (!autoplay) return
