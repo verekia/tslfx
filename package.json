@@ -43,7 +43,7 @@
     "@types/node": "22.10.2",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
-    "@types/three": "0.171.0",
+    "@types/three": "file:./types-three-0.172.9999x.tgz",
     "eslint": "9.17.0",
     "eslint-config-next": "15.1.2",
     "husky": "9.1.7",

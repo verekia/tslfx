@@ -1,5 +1,5 @@
 import Page from '@/components/Page'
-import { blendAlpha, impact, pipe, pulsingRing } from '@/shaders'
+import { blendAlpha, impact, pipe, shape } from '@/shaders'
 import { water } from '@/shaders/water'
 import { useFrame } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
@@ -19,18 +19,7 @@ const BlendingMaterial = () => {
     []
   )
 
-  const { nodes: pulsingRingNodes } = useMemo(
-    () =>
-      pulsingRing({
-        startColor: new Vector4(0, 0, 0, 1),
-        endColor: new Vector4(0, 0, 0, 1),
-        startThickness: 0.3,
-        innerSmoothness: 0.1,
-        maxRadius: 0.4,
-        endThickness: 0.1,
-      }),
-    []
-  )
+  const { uniforms: shapeUniforms, nodes: shapeNodes } = useMemo(() => shape({ endSize: 0.7 }), [])
 
   const { uniforms: waterUniforms, nodes: waterNodes } = useMemo(
     () =>
@@ -46,13 +35,17 @@ const BlendingMaterial = () => {
   useFrame((_, delta) => {
     waterUniforms.time.value += delta * 10
     impactUniforms.time.value += delta / impactUniforms.duration.value
+    shapeUniforms.time.value += delta / shapeUniforms.duration.value
     if (impactUniforms.time.value > 1) {
       impactUniforms.seed.value = Math.round(Math.random() * 1000)
       impactUniforms.time.value = 0
     }
+    if (shapeUniforms.time.value > 1) {
+      shapeUniforms.time.value = 0
+    }
   })
 
-  const colorNode = pipe(blendAlpha, waterNodes.colorNode, pulsingRingNodes.colorNode, impactNodes.colorNode)
+  const colorNode = pipe(blendAlpha, waterNodes.colorNode, shapeNodes.colorNode, impactNodes.colorNode)
 
   return <meshBasicNodeMaterial ref={materialRef} colorNode={colorNode} transparent />
 }

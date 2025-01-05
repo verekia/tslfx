@@ -69,13 +69,9 @@ const ImpactVFX = () => {
 > [!CAUTION]
 > You should **memoize any TSL logic** to not re-create nodes on every render.
 
-## VFX
+## Primitives and compositions
 
-- 💥 [Impact](https://tslfx.v1v2.io/impact)
-- ⭕️ [Pulsing Ring](https://tslfx.v1v2.io/pulsing-ring)
-- 🌈 [Gradient](https://tslfx.v1v2.io/gradient)
-- 💧 [Water](https://tslfx.v1v2.io/water) (simplex noise)
-- 🟠 [Shape](https://tslfx.v1v2.io/shape) (more shapes will be added)
+Primitives are basic single effects. You can combine them together to create more complex effects, which I am calling "compositions" in this library. There is no API to combine them yet, but check out the code of the examples to see how it works.
 
 ## SDFs
 
