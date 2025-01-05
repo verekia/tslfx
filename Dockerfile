@@ -6,6 +6,7 @@ WORKDIR /app
 
 COPY bun.lockb package.json ./
 COPY patches ./patches
+COPY types-three-0.172.9999x.tgz ./types-three-0.172.9999x.tgz
 
 RUN bun i
 
