@@ -8,6 +8,27 @@ import { Environment, OrbitControls, PerspectiveCamera } from '@react-three/drei
 import { setStore, useStoreValue } from '@/lib/store'
 import PlaneScene from './PlaneScene'
 
+const Item = ({ href, children }: { href: string; children: ReactNode }) => (
+  <div className="relative group">
+    <Link href={href} className="text-sm">
+      <li className="pl-2">{children}</li>
+    </Link>
+    <Link
+      href={`https://github.com/verekia/tslfx/blob/main/src/pages${href}.tsx`}
+      className="absolute top-0 right-0 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      target="_blank"
+    >
+      <div className="flex items-center gap-1">
+        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className="size-4">
+          <path fill="none" d="M0 0h24v24H0V0z" />
+          <path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
+        </svg>
+        <div>code</div>
+      </div>
+    </Link>
+  </div>
+)
+
 const Page = ({
   title,
   levaProps,
@@ -35,7 +56,7 @@ const Page = ({
         <title>{title ? `${title} | TSLFX` : 'TSLFX | TSL VFX Library'}</title>
       </Head>
       <div className={`h-screen ${dark ? 'bg-[#333]' : 'bg-[#f0f0f0]'}`}>
-        <div className="fixed top-3 left-3 z-50 flex flex-col gap-2 p-2 px-3 py-2 text-white rounded-md bg-black/50 [&_li]:text-sm [&_li]:pl-2">
+        <div className="fixed top-3 left-3 z-50 flex flex-col gap-2 p-2 px-3 py-2 text-white rounded-md bg-black/50">
           <header className="flex items-center gap-1">
             <Link href="/">
               <h1 className="text-2xl font-bold">✨ TSLFX ✨</h1>
@@ -51,15 +72,9 @@ const Page = ({
           <section>
             <h2 className="font-semibold">Compositions</h2>
             <ul>
-              <Link href="/composition/particles">
-                <li>Particles</li>
-              </Link>
-              <Link href="/composition/timing">
-                <li>Timing</li>
-              </Link>
-              <Link href="/composition/impact">
-                <li>Impact</li>
-              </Link>
+              <Item href="/composition/particles">Particles</Item>
+              <Item href="/composition/timing">Timing</Item>
+              <Item href="/composition/impact">Impact</Item>
               {/* <Link href="/composition/new-impact">
                 <li>Impact (primitives)</li>
               </Link> */}
@@ -68,43 +83,25 @@ const Page = ({
           <section>
             <h2 className="font-semibold">Primitives</h2>
             <ul>
-              <Link href="/primitive/shape">
-                <li>Shape</li>
-              </Link>
-              <Link href="/primitive/scatter">
-                <li>Scatter</li>
-              </Link>
-              <Link href="/primitive/gradient">
-                <li>Gradient</li>
-              </Link>
+              <Item href="/primitive/shape">Shape</Item>
+              <Item href="/primitive/scatter">Scatter</Item>
+              <Item href="/primitive/gradient">Gradient</Item>
             </ul>
           </section>
           <section>
             <h2 className="font-semibold">SDFs</h2>
             <ul>
-              <Link href="/sdf/circle">
-                <li>Circle</li>
-              </Link>
-              <Link href="/sdf/vesica">
-                <li>Vesica</li>
-              </Link>
-              <Link href="/sdf/heart">
-                <li>Heart</li>
-              </Link>
+              <Item href="/sdf/circle">Circle</Item>
+              <Item href="/sdf/vesica">Vesica</Item>
+              <Item href="/sdf/heart">Heart</Item>
             </ul>
           </section>
           <section>
             <h2 className="font-semibold">Misc</h2>
             <ul>
-              <Link href="/misc/water">
-                <li>Water</li>
-              </Link>
-              <Link href="/misc/blending">
-                <li>Blending</li>
-              </Link>
-              <Link href="/misc/template">
-                <li>Template</li>
-              </Link>
+              <Item href="/misc/water">Water</Item>
+              <Item href="/misc/blending">Blending</Item>
+              <Item href="/misc/template">Template</Item>
             </ul>
           </section>
         </div>
