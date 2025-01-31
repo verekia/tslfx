@@ -20,8 +20,6 @@ const MyCanvas = ({ children }: { children: React.ReactNode }) => {
           alpha: true,
         })
         renderer.init().then(() => setFrameloop('always'))
-        // @ts-expect-error
-        renderer.xr = { addEventListener: () => {} }
         return renderer
       }}
     >
