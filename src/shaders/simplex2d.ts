@@ -6,11 +6,11 @@ const permute = (x: ReturnType<typeof vec3>) => x.mul(34).add(1).mul(x).mod(289)
 
 const snoise = (v: ReturnType<typeof vec2>) => {
   const C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439)
-  let i = dot(v, C.yy).add(v).floor()
-  const x0 = v.sub(i).add(dot(i, C.xx))
+  const firstI = dot(v, C.yy).add(v).floor()
+  const x0 = v.sub(firstI).add(dot(firstI, C.xx))
   const i1 = select(x0.x.greaterThan(x0.y), vec2(1, 0), vec2(0, 1))
   const x12 = x0.xyxy.add(C.xxzz).sub(vec4(i1, 0, 0))
-  i = i.mod(289)
+  const i = firstI.mod(289)
   const p = permute(permute(vec3(0, i1.y, 1).add(i.y)).add(vec3(0, i1.x, 1).add(i.x)))
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let m: ShaderNodeObject<any> = max(vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)).negate().add(0.5), 0)
