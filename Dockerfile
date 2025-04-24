@@ -4,7 +4,7 @@ FROM oven/bun:1.1.36-alpine AS builder
 
 WORKDIR /app
 
-COPY bun.lockb package.json ./
+COPY bun.lock package.json ./
 COPY patches ./patches
 
 RUN bun i
