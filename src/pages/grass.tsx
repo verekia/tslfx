@@ -6,7 +6,6 @@ import terrainSrc from '@/shaders/grass/terrain.glb'
 import { useMemo } from 'react'
 import { BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, Vector3 } from 'three'
 import {
-  color,
   positionLocal,
   mul,
   add,
@@ -19,6 +18,8 @@ import {
   sub,
   normalize,
   cross,
+  attribute,
+  div,
 } from 'three/tsl'
 
 const createFullGrassGeometry = (options: {
@@ -27,6 +28,8 @@ const createFullGrassGeometry = (options: {
   colorB: string
   bladesPerPoint: number
   clusterRadius: number
+  heightVariation: { min: number; max: number }
+  bladeWidthVariation: { min: number; max: number }
 }) => {
   // Extract points from the input geometry's position attribute
   const positionAttribute = options.geometry.getAttribute('position')
@@ -54,6 +57,8 @@ const createFullGrassGeometry = (options: {
   const vertices = new Float32Array(vertexCount * 3)
   const normalArray = new Float32Array(vertexCount * 3)
   const colors = new Float32Array(vertexCount * 3)
+  const heights = new Float32Array(vertexCount) // Store random height per vertex
+  const bladeWidths = new Float32Array(vertexCount) // Store random width per vertex
   const indices = []
 
   // Parse colors
@@ -79,6 +84,15 @@ const createFullGrassGeometry = (options: {
       const vertexOffset = bladeIndex * 9 // 3 vertices * 3 components
       const colorOffset = bladeIndex * 9
       const indexOffset = bladeIndex * 3
+      const heightOffset = bladeIndex * 3
+
+      // Generate random height for this blade
+      const { min, max } = options.heightVariation
+      const randomHeight = min + Math.random() * (max - min)
+
+      // Generate random width for this blade
+      const { min: minWidth, max: maxWidth } = options.bladeWidthVariation
+      const randomWidth = minWidth + Math.random() * (maxWidth - minWidth)
 
       // Generate random color for this blade
       const randomValue = Math.random()
@@ -95,7 +109,8 @@ const createFullGrassGeometry = (options: {
         // For surrounding blades, we need to position them on the terrain's normal plane
         // Generate random offset in the tangent plane of the terrain surface
         const angle = Math.random() * 2 * Math.PI
-        const distance = options.clusterRadius
+        // Use square root for uniform distribution in a disk (accounts for area increase with radius)
+        const distance = Math.sqrt(Math.random()) * options.clusterRadius
 
         // Create a local coordinate system from the terrain normal
         const terrainUp = terrainNormalVec
@@ -129,20 +144,35 @@ const createFullGrassGeometry = (options: {
         normalArray[vertexOffset + k * 3 + 2] = terrainNormalVec.z
       }
 
+      // Store the same random height for all 3 vertices of this blade
+      for (let k = 0; k < 3; k++) {
+        heights[heightOffset + k] = randomHeight
+      }
+
+      // Store the same random width for all 3 vertices of this blade
+      for (let k = 0; k < 3; k++) {
+        bladeWidths[heightOffset + k] = randomWidth
+      }
+
       // Set gradient colors: darker blade color for base vertices (0, 2), full blade color for tip (1)
       for (let k = 0; k < 3; k++) {
+        // Calculate brightness based on absolute height from ground
+        let absoluteHeight
         if (k === 1) {
-          // Tip vertex gets the full blade color
-          colors[colorOffset + k * 3 + 0] = bladeColor.r
-          colors[colorOffset + k * 3 + 1] = bladeColor.g
-          colors[colorOffset + k * 3 + 2] = bladeColor.b
+          // Tip vertex is at the blade's full height
+          absoluteHeight = randomHeight
         } else {
-          // Base vertices get darker version of blade color (30% brightness)
-          const darknessFactor = 0.3
-          colors[colorOffset + k * 3 + 0] = bladeColor.r * darknessFactor
-          colors[colorOffset + k * 3 + 1] = bladeColor.g * darknessFactor
-          colors[colorOffset + k * 3 + 2] = bladeColor.b * darknessFactor
+          // Base vertices are at ground level (height = 0)
+          absoluteHeight = 0
         }
+
+        // Map absolute height to brightness (0 = darkest, max = brightest)
+        const heightRatio = absoluteHeight / options.heightVariation.max
+        const brightness = 0.3 + heightRatio * 0.7 // Range from 0.3 to 1.0
+
+        colors[colorOffset + k * 3 + 0] = bladeColor.r * brightness
+        colors[colorOffset + k * 3 + 1] = bladeColor.g * brightness
+        colors[colorOffset + k * 3 + 2] = bladeColor.b * brightness
       }
 
       // Indices - correct winding order
@@ -156,17 +186,23 @@ const createFullGrassGeometry = (options: {
   geometry.setAttribute('position', new BufferAttribute(vertices, 3))
   geometry.setAttribute('normal', new BufferAttribute(normalArray, 3))
   geometry.setAttribute('color', new BufferAttribute(colors, 3))
+  geometry.setAttribute('bladeHeight', new BufferAttribute(heights, 1))
+  geometry.setAttribute('bladeWidth', new BufferAttribute(bladeWidths, 1))
   geometry.setIndex(indices)
 
   return geometry
 }
 
 const createPositionNode = (options: {
-  bladeWidth: number
-  bladeHeight: number
   windSpeed: number
+  windSize: number
+  windDisplacement: number
   instanceScales: { x: number; y: number; z: number }
 }) => {
+  // Get the blade height and width from the geometry attributes
+  const bladeHeight = attribute('bladeHeight')
+  const bladeWidth = attribute('bladeWidth')
+
   // Create grass blade shape based on vertex index
   // Vertex 0: left base, Vertex 1: top center, Vertex 2: right base
   const vertIdx = vertexIndex.modInt(3)
@@ -180,40 +216,48 @@ const createPositionNode = (options: {
   const right = normalize(cross(up, toCameraDir))
 
   // Define local positions for the triangle vertices (billboarded)
-  const leftBase = mul(right, -options.bladeWidth * 0.5)
-  const rightBase = mul(right, options.bladeWidth * 0.5)
-  const topCenter = vec3(0, options.bladeHeight, 0)
+  const leftBase = mul(right, mul(bladeWidth, -0.5))
+  const rightBase = mul(right, mul(bladeWidth, 0.5))
+  const topCenter = vec3(0, bladeHeight, 0)
 
   // Wind animation applied to the top vertex
-  const windOffset = mul(mx_noise_vec3(add(worldPos, mul(time, options.windSpeed))), vec3(0.1, 0, 0.1))
+  const windNoise = mx_noise_vec3(add(div(worldPos, options.windSize), mul(time, options.windSpeed)))
+  const finalWindOffset = mul(windNoise, vec3(options.windDisplacement, 0, options.windDisplacement))
 
   // Select position based on vertex index with billboard transformation
-  const localOffset = vertIdx.equal(0).select(leftBase, vertIdx.equal(1).select(add(topCenter, windOffset), rightBase))
+  const localOffset = vertIdx
+    .equal(0)
+    .select(leftBase, vertIdx.equal(1).select(add(topCenter, finalWindOffset), rightBase))
 
   return add(positionLocal, localOffset)
 }
 
-const grass = (options: { geometry: BufferGeometry }) => {
+const grass = (options: {
+  geometry: BufferGeometry
+  bladeWidthVariation?: { min: number; max: number }
+  windSpeed?: number
+  windSize?: number
+  windDisplacement?: number
+}) => {
   const positionNode = createPositionNode({
-    bladeWidth: 0.05,
-    bladeHeight: 0.5,
-    windSpeed: 2,
+    windSpeed: options.windSpeed ?? 2,
+    windSize: options.windSize ?? 0.1,
+    windDisplacement: options.windDisplacement ?? 0.1,
     instanceScales: { x: 1, y: 1, z: 1 },
   })
-
-  // Use vertex colors from geometry (which now contain the gradient)
-  const colorNode = color()
 
   // Create the full grass geometry using the input geometry as a grid
   const geometry = createFullGrassGeometry({
     geometry: options.geometry,
-    colorA: 'red',
-    colorB: 'blue',
-    bladesPerPoint: 10,
-    clusterRadius: 0.2,
+    colorA: '#3a0',
+    colorB: '#180',
+    bladesPerPoint: 40,
+    clusterRadius: 0.3,
+    heightVariation: { min: 0.2, max: 0.8 },
+    bladeWidthVariation: options.bladeWidthVariation ?? { min: 0.04, max: 0.06 },
   })
 
-  return { positionNode, colorNode, geometry }
+  return { positionNode, geometry }
 }
 
 type Nodes = {
@@ -224,11 +268,17 @@ type Nodes = {
 const Content = () => {
   const { grass: grassGrid, terrain } = useGLTF(terrainSrc).nodes as Nodes
 
-  const {
-    geometry: fullGrassGeometry,
-    positionNode,
-    colorNode,
-  } = useMemo(() => grass({ geometry: grassGrid.geometry }), [grassGrid.geometry])
+  const { geometry: fullGrassGeometry, positionNode } = useMemo(
+    () =>
+      grass({
+        geometry: grassGrid.geometry,
+        bladeWidthVariation: { min: 0.1, max: 0.2 },
+        windSpeed: 1.2,
+        windSize: 0.5,
+        windDisplacement: 0.5,
+      }),
+    [grassGrid.geometry]
+  )
 
   return (
     <>
@@ -237,7 +287,7 @@ const Content = () => {
           <meshLambertMaterial color="#290" side={DoubleSide} />
         </mesh>
         <mesh geometry={fullGrassGeometry}>
-          <meshLambertNodeMaterial colorNode={colorNode} positionNode={positionNode} vertexColors />
+          <meshLambertNodeMaterial positionNode={positionNode} vertexColors />
         </mesh>
         <mesh geometry={grassGrid.geometry} position-y={-0.1}>
           <meshLambertMaterial color="red" wireframe />
