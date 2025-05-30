@@ -1,11 +1,12 @@
-import { extend, type ThreeElement } from '@react-three/fiber'
-import { MeshBasicNodeMaterial, SpriteNodeMaterial } from 'three/webgpu'
+import { extend } from '@react-three/fiber'
+import * as THREE from 'three/webgpu'
 
-extend({ MeshBasicNodeMaterial, SpriteNodeMaterial })
+import type { ThreeToJSXElements } from '@react-three/fiber'
 
 declare module '@react-three/fiber' {
-  interface ThreeElements {
-    meshBasicNodeMaterial: ThreeElement<typeof MeshBasicNodeMaterial>
-    spriteNodeMaterial: ThreeElement<typeof SpriteNodeMaterial>
-  }
+  // eslint-disable-next-line
+  interface ThreeElements extends ThreeToJSXElements<typeof THREE> {}
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+extend(THREE as any)
