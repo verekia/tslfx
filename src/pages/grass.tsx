@@ -198,6 +198,7 @@ const createPositionNode = (options: {
   windSize: number
   windDisplacement: number
   instanceScales: { x: number; y: number; z: number }
+  upBias?: number
 }) => {
   // Get the blade height and width from the geometry attributes
   const bladeHeight = attribute('bladeHeight')
@@ -215,10 +216,15 @@ const createPositionNode = (options: {
   const up = vec3(0, 1, 0)
   const right = normalize(cross(up, toCameraDir))
 
+  // Pure 3D billboarding for top-down views
+  const billboardUp = normalize(cross(toCameraDir, right))
+  // Add a small upward bias to prevent edge-on blades at mid-height angles
+  const biasedUp = normalize(add(billboardUp, mul(vec3(0, 1, 0), options.upBias ?? 0.5)))
+  const topCenter = mul(biasedUp, bladeHeight)
+
   // Define local positions for the triangle vertices (billboarded)
   const leftBase = mul(right, mul(bladeWidth, -0.5))
   const rightBase = mul(right, mul(bladeWidth, 0.5))
-  const topCenter = vec3(0, bladeHeight, 0)
 
   // Wind animation applied to the top vertex
   const windNoise = mx_noise_vec3(add(div(worldPos, options.windSize), mul(time, options.windSpeed)))
