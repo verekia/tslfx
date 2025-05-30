@@ -30,13 +30,21 @@ const createFullGrassGeometry = (options: {
 }) => {
   // Extract points from the input geometry's position attribute
   const positionAttribute = options.geometry.getAttribute('position')
+  const normalAttribute = options.geometry.getAttribute('normal')
   const points: number[][] = []
+  const normals: number[][] = []
 
   for (let i = 0; i < positionAttribute.count; i++) {
     const x = positionAttribute.getX(i)
     const y = positionAttribute.getY(i)
     const z = positionAttribute.getZ(i)
     points.push([x, y, z])
+
+    // Extract normal for this vertex
+    const nx = normalAttribute.getX(i)
+    const ny = normalAttribute.getY(i)
+    const nz = normalAttribute.getZ(i)
+    normals.push([nx, ny, nz])
   }
 
   const totalBladeCount = points.length * options.bladesPerPoint
@@ -44,21 +52,13 @@ const createFullGrassGeometry = (options: {
 
   // Create vertices for all grass blades with world positions
   const vertices = new Float32Array(vertexCount * 3)
-  const normals = new Float32Array(vertexCount * 3)
+  const normalArray = new Float32Array(vertexCount * 3)
   const colors = new Float32Array(vertexCount * 3)
   const indices = []
 
   // Parse colors
   const colorAVec = new Color(options.colorA)
   const colorBVec = new Color(options.colorB)
-
-  // Calculate normal for grass blades
-  const v0 = new Vector3(-0.3, 0, 0)
-  const v1 = new Vector3(0, 1, 0)
-  const v2 = new Vector3(0.3, 0, 0)
-  const edge1 = v1.clone().sub(v0)
-  const edge2 = v2.clone().sub(v0)
-  const normal = edge1.cross(edge2).normalize()
 
   let bladeIndex = 0
 
@@ -70,6 +70,10 @@ const createFullGrassGeometry = (options: {
     const centerY = pos[1]!
     const centerZ = pos[2]!
 
+    // Get the terrain normal for this point
+    const terrainNormal = normals[i]!
+    const terrainNormalVec = new Vector3(terrainNormal[0]!, terrainNormal[1]!, terrainNormal[2]!)
+
     // Generate blades for this cluster
     for (let j = 0; j < options.bladesPerPoint; j++) {
       const vertexOffset = bladeIndex * 9 // 3 vertices * 3 components
@@ -80,20 +84,36 @@ const createFullGrassGeometry = (options: {
       const randomValue = Math.random()
       const bladeColor = colorAVec.clone().lerp(colorBVec, randomValue)
 
-      let worldX, worldZ
+      let worldX, worldY, worldZ
 
       if (j === 0) {
         // First blade is at the center
         worldX = centerX
+        worldY = centerY
         worldZ = centerZ
       } else {
-        // Surrounding blades are positioned in a circle with random angles
-        const angle = Math.random() * 2 * Math.PI // Random angle
-        worldX = centerX + Math.cos(angle) * options.clusterRadius
-        worldZ = centerZ + Math.sin(angle) * options.clusterRadius
-      }
+        // For surrounding blades, we need to position them on the terrain's normal plane
+        // Generate random offset in the tangent plane of the terrain surface
+        const angle = Math.random() * 2 * Math.PI
+        const distance = options.clusterRadius
 
-      const worldY = centerY
+        // Create a local coordinate system from the terrain normal
+        const terrainUp = terrainNormalVec
+        const reference = Math.abs(terrainUp.y) < 0.9 ? new Vector3(0, 1, 0) : new Vector3(1, 0, 0)
+        const tangent1 = new Vector3().crossVectors(terrainUp, reference).normalize()
+        const tangent2 = new Vector3().crossVectors(terrainUp, tangent1).normalize()
+
+        // Generate offset in the tangent plane
+        const offsetX = Math.cos(angle) * distance
+        const offsetZ = Math.sin(angle) * distance
+
+        // Apply the offset in the terrain's tangent plane
+        const offset = tangent1.clone().multiplyScalar(offsetX).add(tangent2.clone().multiplyScalar(offsetZ))
+
+        worldX = centerX + offset.x
+        worldY = centerY + offset.y
+        worldZ = centerZ + offset.z
+      }
 
       // Store world position for each vertex (all 3 vertices get the same world position)
       for (let k = 0; k < 3; k++) {
@@ -102,18 +122,27 @@ const createFullGrassGeometry = (options: {
         vertices[vertexOffset + k * 3 + 2] = worldZ
       }
 
-      // Normals for all 3 vertices
+      // Use the terrain normal for all 3 vertices of this blade
       for (let k = 0; k < 3; k++) {
-        normals[vertexOffset + k * 3 + 0] = normal.x
-        normals[vertexOffset + k * 3 + 1] = normal.y
-        normals[vertexOffset + k * 3 + 2] = normal.z
+        normalArray[vertexOffset + k * 3 + 0] = terrainNormalVec.x
+        normalArray[vertexOffset + k * 3 + 1] = terrainNormalVec.y
+        normalArray[vertexOffset + k * 3 + 2] = terrainNormalVec.z
       }
 
-      // Set the same color for all 3 vertices of this blade
+      // Set gradient colors: darker blade color for base vertices (0, 2), full blade color for tip (1)
       for (let k = 0; k < 3; k++) {
-        colors[colorOffset + k * 3 + 0] = bladeColor.r
-        colors[colorOffset + k * 3 + 1] = bladeColor.g
-        colors[colorOffset + k * 3 + 2] = bladeColor.b
+        if (k === 1) {
+          // Tip vertex gets the full blade color
+          colors[colorOffset + k * 3 + 0] = bladeColor.r
+          colors[colorOffset + k * 3 + 1] = bladeColor.g
+          colors[colorOffset + k * 3 + 2] = bladeColor.b
+        } else {
+          // Base vertices get darker version of blade color (30% brightness)
+          const darknessFactor = 0.3
+          colors[colorOffset + k * 3 + 0] = bladeColor.r * darknessFactor
+          colors[colorOffset + k * 3 + 1] = bladeColor.g * darknessFactor
+          colors[colorOffset + k * 3 + 2] = bladeColor.b * darknessFactor
+        }
       }
 
       // Indices - correct winding order
@@ -125,7 +154,7 @@ const createFullGrassGeometry = (options: {
 
   const geometry = new BufferGeometry()
   geometry.setAttribute('position', new BufferAttribute(vertices, 3))
-  geometry.setAttribute('normal', new BufferAttribute(normals, 3))
+  geometry.setAttribute('normal', new BufferAttribute(normalArray, 3))
   geometry.setAttribute('color', new BufferAttribute(colors, 3))
   geometry.setIndex(indices)
 
@@ -142,7 +171,7 @@ const createPositionNode = (options: {
   // Vertex 0: left base, Vertex 1: top center, Vertex 2: right base
   const vertIdx = vertexIndex.modInt(3)
 
-  // Calculate billboard direction (from grass to camera)
+  // Calculate billboard direction (from grass to camera) for blade orientation
   const worldPos = positionWorld
   const toCameraDir = normalize(sub(cameraPosition, worldPos))
 
@@ -150,7 +179,7 @@ const createPositionNode = (options: {
   const up = vec3(0, 1, 0)
   const right = normalize(cross(up, toCameraDir))
 
-  // Define local positions for the triangle vertices
+  // Define local positions for the triangle vertices (billboarded)
   const leftBase = mul(right, -options.bladeWidth * 0.5)
   const rightBase = mul(right, options.bladeWidth * 0.5)
   const topCenter = vec3(0, options.bladeHeight, 0)
@@ -172,15 +201,16 @@ const grass = (options: { geometry: BufferGeometry }) => {
     instanceScales: { x: 1, y: 1, z: 1 },
   })
 
-  const colorNode = color('#3a0')
+  // Use vertex colors from geometry (which now contain the gradient)
+  const colorNode = color()
 
   // Create the full grass geometry using the input geometry as a grid
   const geometry = createFullGrassGeometry({
     geometry: options.geometry,
-    colorA: '#2a5a1a',
-    colorB: '#4a8a2a',
-    bladesPerPoint: 5,
-    clusterRadius: 0.3,
+    colorA: 'red',
+    colorB: 'blue',
+    bladesPerPoint: 10,
+    clusterRadius: 0.2,
   })
 
   return { positionNode, colorNode, geometry }
@@ -207,7 +237,7 @@ const Content = () => {
           <meshLambertMaterial color="#290" side={DoubleSide} />
         </mesh>
         <mesh geometry={fullGrassGeometry}>
-          <meshLambertNodeMaterial colorNode={colorNode} positionNode={positionNode} />
+          <meshLambertNodeMaterial colorNode={colorNode} positionNode={positionNode} vertexColors />
         </mesh>
         <mesh geometry={grassGrid.geometry} position-y={-0.1}>
           <meshLambertMaterial color="red" wireframe />
