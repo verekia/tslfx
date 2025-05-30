@@ -9,5 +9,7 @@ export * from './impact'
 export * from './scatter'
 export * from './shape'
 
+export * from './grass/grass'
+
 export * from './util'
 export * from './easing'
