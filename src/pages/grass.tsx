@@ -295,8 +295,11 @@ const Content = () => {
         <mesh geometry={fullGrassGeometry}>
           <meshLambertNodeMaterial positionNode={positionNode} vertexColors />
         </mesh>
-        <mesh geometry={grassGrid.geometry} position-y={-0.1}>
-          <meshLambertMaterial color="red" wireframe />
+        <mesh geometry={terrain.geometry} position-y={0}>
+          <meshLambertMaterial color="#69f" wireframe />
+        </mesh>
+        <mesh geometry={grassGrid.geometry} position-y={-0.05}>
+          <meshLambertMaterial color="#f33" wireframe />
         </mesh>
       </group>
       <directionalLight position={[0, 10, -3]} intensity={3} />
