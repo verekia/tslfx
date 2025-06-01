@@ -22,7 +22,7 @@
         "react-dom": "19.1.0",
         "serve": "14.2.4",
         "tailwindcss": "3.4.17",
-        "three": "0.176.0",
+        "three": "0.177.0",
         "tsup": "8.3.5",
         "typescript": "5.8.3",
         "zustand": "5.0.2",

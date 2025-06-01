@@ -14,6 +14,7 @@ import {
   cross,
   attribute,
   div,
+  modInt,
 } from 'three/tsl'
 
 const createFullGrassGeometry = (options: {
@@ -207,7 +208,7 @@ const createPositionNode = (options: {
   const bladeWidth = attribute('bladeWidth')
 
   // Vertex 0: left base, Vertex 1: top center, Vertex 2: right base
-  const vertIdx = vertexIndex.modInt(3)
+  const vertIdx = modInt(vertexIndex, 3)
 
   // Calculate billboard direction (from grass to camera) for blade orientation
   const worldPos = positionWorld
