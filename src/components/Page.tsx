@@ -100,6 +100,7 @@ const Page = ({
             <h2 className="font-semibold">Misc</h2>
             <ul>
               <Item href="/grass">Grass</Item>
+              <Item href="/waterfall">Waterfall</Item>
               <Item href="/misc/water">Water</Item>
               <Item href="/misc/blending">Blending</Item>
               <Item href="/misc/template">Template</Item>
