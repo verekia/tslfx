@@ -23,9 +23,10 @@ const createFullGrassGeometry = (options: {
   bladesPerPoint: number
   clusterRadius: number
   heightVariation: { min: number; max: number }
-  bladeWidthVariation: { min: number; max: number }
+  widthVariation: { min: number; max: number }
+  baseDarkness: number
+  colorSamples: number
 }) => {
-  // Extract points from the input geometry's position attribute
   const positionAttribute = options.geometry.getAttribute('position')
   const normalAttribute = options.geometry.getAttribute('normal')
   const points: number[][] = []
@@ -37,7 +38,6 @@ const createFullGrassGeometry = (options: {
     const z = positionAttribute.getZ(i)
     points.push([x, y, z])
 
-    // Extract normal for this vertex
     const nx = normalAttribute.getX(i)
     const ny = normalAttribute.getY(i)
     const nz = normalAttribute.getZ(i)
@@ -45,52 +45,67 @@ const createFullGrassGeometry = (options: {
   }
 
   const totalBladeCount = points.length * options.bladesPerPoint
-  const vertexCount = totalBladeCount * 3 // 3 vertices per triangle
+  const vertexCount = totalBladeCount * 3
 
-  // Create vertices for all grass blades with world positions
   const vertices = new Float32Array(vertexCount * 3)
   const normalArray = new Float32Array(vertexCount * 3)
   const colors = new Float32Array(vertexCount * 3)
-  const heights = new Float32Array(vertexCount) // Store random height per vertex
-  const bladeWidths = new Float32Array(vertexCount) // Store random width per vertex
+  const heights = new Float32Array(vertexCount)
+  const bladeWidths = new Float32Array(vertexCount)
   const indices = []
 
-  // Parse colors
   const colorAVec = new Color(options.colorA)
   const colorBVec = new Color(options.colorB)
+
+  const colorSamples: Color[] = []
+  for (let i = 0; i < options.colorSamples; i++) {
+    const lerpValue = i / (options.colorSamples - 1)
+    const sampleColor = colorAVec.clone().lerp(colorBVec, lerpValue)
+    colorSamples.push(sampleColor)
+  }
+
+  const tmpTerrainNormal = new Vector3()
+  const tmpReference = new Vector3()
+  const tmpTangent1 = new Vector3()
+  const tmpTangent2 = new Vector3()
+  const tmpOffset = new Vector3()
+  const tmpOffsetComponent1 = new Vector3()
+  const tmpOffsetComponent2 = new Vector3()
+
+  // Minor perf optimizations
+  const { min: minHeight, max: maxHeight } = options.heightVariation
+  const { min: minWidth, max: maxWidth } = options.widthVariation
+  const heightRange = maxHeight - minHeight
+  const widthRange = maxWidth - minWidth
+  const twoPi = 2 * Math.PI
 
   let bladeIndex = 0
 
   for (let i = 0; i < points.length; i++) {
-    // Get position for this cluster and convert from Blender to Three.js coordinates
-    // Blender: [x, z, y] -> Three.js: [x, y, -z]
-    const pos = points[i]!
-    const centerX = pos[0]!
-    const centerY = pos[1]!
-    const centerZ = pos[2]!
+    const centerX = points[i]![0]!
+    const centerY = points[i]![1]!
+    const centerZ = points[i]![2]!
 
-    // Get the terrain normal for this point
-    const terrainNormal = normals[i]!
-    const terrainNormalVec = new Vector3(terrainNormal[0]!, terrainNormal[1]!, terrainNormal[2]!)
+    tmpTerrainNormal.set(normals[i]![0]!, normals[i]![1]!, normals[i]![2]!)
 
-    // Generate blades for this cluster
     for (let j = 0; j < options.bladesPerPoint; j++) {
       const vertexOffset = bladeIndex * 9 // 3 vertices * 3 components
       const colorOffset = bladeIndex * 9
       const indexOffset = bladeIndex * 3
       const heightOffset = bladeIndex * 3
 
-      // Generate random height for this blade
-      const { min, max } = options.heightVariation
-      const randomHeight = min + Math.random() * (max - min)
+      // Generate random height for this blade - use cached values
+      const randomHeight = minHeight + Math.random() * heightRange
 
-      // Generate random width for this blade
-      const { min: minWidth, max: maxWidth } = options.bladeWidthVariation
-      const randomWidth = minWidth + Math.random() * (maxWidth - minWidth)
+      // Generate random width for this blade - use cached values
+      const randomWidth = minWidth + Math.random() * widthRange
 
-      // Generate random color for this blade
-      const randomValue = Math.random()
-      const bladeColor = colorAVec.clone().lerp(colorBVec, randomValue)
+      // Randomly select one of the pre-calculated color samples - cache the color object
+      const colorSampleIndex = Math.floor(Math.random() * options.colorSamples)
+      const bladeColor = colorSamples[colorSampleIndex]!
+      const bladeColorR = bladeColor.r
+      const bladeColorG = bladeColor.g
+      const bladeColorB = bladeColor.b
 
       let worldX, worldY, worldZ
 
@@ -102,26 +117,28 @@ const createFullGrassGeometry = (options: {
       } else {
         // For surrounding blades, we need to position them on the terrain's normal plane
         // Generate random offset in the tangent plane of the terrain surface
-        const angle = Math.random() * 2 * Math.PI
+        const angle = Math.random() * twoPi
         // Use square root for uniform distribution in a disk (accounts for area increase with radius)
         const distance = Math.sqrt(Math.random()) * options.clusterRadius
 
         // Create a local coordinate system from the terrain normal
-        const terrainUp = terrainNormalVec
-        const reference = Math.abs(terrainUp.y) < 0.9 ? new Vector3(0, 1, 0) : new Vector3(1, 0, 0)
-        const tangent1 = new Vector3().crossVectors(terrainUp, reference).normalize()
-        const tangent2 = new Vector3().crossVectors(terrainUp, tangent1).normalize()
+        const terrainUp = tmpTerrainNormal
+        tmpReference.set(Math.abs(terrainUp.y) < 0.9 ? 0 : 1, Math.abs(terrainUp.y) < 0.9 ? 1 : 0, 0)
+        tmpTangent1.crossVectors(terrainUp, tmpReference).normalize()
+        tmpTangent2.crossVectors(terrainUp, tmpTangent1).normalize()
 
         // Generate offset in the tangent plane
         const offsetX = Math.cos(angle) * distance
         const offsetZ = Math.sin(angle) * distance
 
-        // Apply the offset in the terrain's tangent plane
-        const offset = tangent1.clone().multiplyScalar(offsetX).add(tangent2.clone().multiplyScalar(offsetZ))
+        // Apply the offset in the terrain's tangent plane - reuse temporary vectors
+        tmpOffsetComponent1.copy(tmpTangent1).multiplyScalar(offsetX)
+        tmpOffsetComponent2.copy(tmpTangent2).multiplyScalar(offsetZ)
+        tmpOffset.copy(tmpOffsetComponent1).add(tmpOffsetComponent2)
 
-        worldX = centerX + offset.x
-        worldY = centerY + offset.y
-        worldZ = centerZ + offset.z
+        worldX = centerX + tmpOffset.x
+        worldY = centerY + tmpOffset.y
+        worldZ = centerZ + tmpOffset.z
       }
 
       // Store world position for each vertex (all 3 vertices get the same world position)
@@ -133,9 +150,9 @@ const createFullGrassGeometry = (options: {
 
       // Use the terrain normal for all 3 vertices of this blade
       for (let k = 0; k < 3; k++) {
-        normalArray[vertexOffset + k * 3 + 0] = terrainNormalVec.x
-        normalArray[vertexOffset + k * 3 + 1] = terrainNormalVec.y
-        normalArray[vertexOffset + k * 3 + 2] = terrainNormalVec.z
+        normalArray[vertexOffset + k * 3 + 0] = tmpTerrainNormal.x
+        normalArray[vertexOffset + k * 3 + 1] = tmpTerrainNormal.y
+        normalArray[vertexOffset + k * 3 + 2] = tmpTerrainNormal.z
       }
 
       // Store the same random height for all 3 vertices of this blade
@@ -149,24 +166,17 @@ const createFullGrassGeometry = (options: {
       }
 
       // Set gradient colors: darker blade color for base vertices (0, 2), full blade color for tip (1)
+      // Pre-calculate brightness values to avoid repeated calculations
+      const tipBrightness = 1 - options.baseDarkness + (randomHeight / maxHeight) * options.baseDarkness
+      const baseBrightness = 1 - options.baseDarkness
+
       for (let k = 0; k < 3; k++) {
-        // Calculate brightness based on absolute height from ground
-        let absoluteHeight
-        if (k === 1) {
-          // Tip vertex is at the blade's full height
-          absoluteHeight = randomHeight
-        } else {
-          // Base vertices are at ground level (height = 0)
-          absoluteHeight = 0
-        }
+        // Use pre-calculated brightness based on vertex type
+        const brightness = k === 1 ? tipBrightness : baseBrightness
 
-        // Map absolute height to brightness (0 = darkest, max = brightest)
-        const heightRatio = absoluteHeight / options.heightVariation.max
-        const brightness = 0.3 + heightRatio * 0.7 // Range from 0.3 to 1.0
-
-        colors[colorOffset + k * 3 + 0] = bladeColor.r * brightness
-        colors[colorOffset + k * 3 + 1] = bladeColor.g * brightness
-        colors[colorOffset + k * 3 + 2] = bladeColor.b * brightness
+        colors[colorOffset + k * 3 + 0] = bladeColorR * brightness
+        colors[colorOffset + k * 3 + 1] = bladeColorG * brightness
+        colors[colorOffset + k * 3 + 2] = bladeColorB * brightness
       }
 
       // Indices - correct winding order
@@ -193,11 +203,9 @@ const createPositionNode = (options: {
   windDisplacement: number
   upBias?: number
 }) => {
-  // Get the blade height and width from the geometry attributes
   const bladeHeight = attribute('bladeHeight')
   const bladeWidth = attribute('bladeWidth')
 
-  // Create grass blade shape based on vertex index
   // Vertex 0: left base, Vertex 1: top center, Vertex 2: right base
   const vertIdx = vertexIndex.modInt(3)
 
@@ -233,7 +241,7 @@ const createPositionNode = (options: {
 
 export const grass = (options: {
   geometry: BufferGeometry
-  bladeWidthVariation?: { min: number; max: number }
+  widthVariation?: { min: number; max: number }
   windSpeed?: number
   windSize?: number
   windDisplacement?: number
@@ -243,6 +251,8 @@ export const grass = (options: {
   heightVariation?: { min: number; max: number }
   colorA?: string
   colorB?: string
+  baseDarkness?: number
+  colorSamples?: number
 }) => {
   const positionNode = createPositionNode({
     windSpeed: options.windSpeed ?? 0.8,
@@ -256,10 +266,12 @@ export const grass = (options: {
     geometry: options.geometry,
     colorA: options.colorA ?? '#3a0',
     colorB: options.colorB ?? '#180',
+    colorSamples: options.colorSamples ?? 4,
     bladesPerPoint: options.bladesPerPoint ?? 30,
     clusterRadius: options.clusterRadius ?? 0.5,
     heightVariation: options.heightVariation ?? { min: 0.3, max: 0.7 },
-    bladeWidthVariation: options.bladeWidthVariation ?? { min: 0.1, max: 0.2 },
+    widthVariation: options.widthVariation ?? { min: 0.1, max: 0.2 },
+    baseDarkness: options.baseDarkness ?? 0.7,
   })
 
   return { positionNode, geometry }
