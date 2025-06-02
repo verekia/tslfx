@@ -30,11 +30,6 @@ type WaterfallOptions = {
   fallWaterColor?: string
   fallFoamColor?: string
 
-  // RoundedEdge colors
-  roundedWaterColor?: string
-  roundedFoamColor?: string
-  roundedSurfaceColor?: string
-
   // Impact foam colors
   impactFoamColor?: string
   impactWaterColor?: string
@@ -53,31 +48,32 @@ type WaterfallOptions = {
   // Stream speeds
   riverFlowSpeed?: number
   fallFlowSpeed?: number
+
+  // Impact foam parameters
+  impactNoiseScale?: number
+  impactAnimSpeed?: number
 }
+
+const sharedFoamColor = '#bdf'
 
 const defaultOptions: Required<WaterfallOptions> = {
   // River colors
   riverWaterColor: '#07b',
   riverDeepBlueColor: '#06a',
-  riverFoamColor: 'white',
+  riverFoamColor: sharedFoamColor,
   riverSurfaceColor: '#08c',
 
   // Fall colors
-  fallWaterColor: '#0a7ab8',
-  fallFoamColor: '#ffffff',
-
-  // RoundedEdge colors
-  roundedWaterColor: '#0a7ab8',
-  roundedFoamColor: '#ffffff',
-  roundedSurfaceColor: '#0c8dd4',
+  fallWaterColor: '#07b',
+  fallFoamColor: sharedFoamColor,
 
   // Impact foam colors
-  impactFoamColor: '#ffffff',
-  impactWaterColor: '#2a9dd8',
+  impactFoamColor: sharedFoamColor,
+  impactWaterColor: '#49d',
 
   // Impact waves colors
-  waveFoamColor: '#ffffff',
-  waveWaterColor: '#1177bb',
+  waveFoamColor: sharedFoamColor,
+  waveWaterColor: 'white',
 
   // Alpha values
   riverAlpha: 1.0,
@@ -89,6 +85,10 @@ const defaultOptions: Required<WaterfallOptions> = {
   // Stream speeds
   riverFlowSpeed: 0.2,
   fallFlowSpeed: 1.5,
+
+  // Impact foam parameters
+  impactNoiseScale: 3.0,
+  impactAnimSpeed: 0.6,
 }
 
 const createRiver = (options: Required<WaterfallOptions>) => {
@@ -116,17 +116,17 @@ const createRiver = (options: Required<WaterfallOptions>) => {
   const edgeDistanceRight = sub(1, uvCoord.x)
   const edgeDistance = min(edgeDistanceLeft, edgeDistanceRight)
 
-  // Animated edge foam
+  // Animated edge foam - less stretched
   const edgeFoamNoise = mx_noise_vec3(
-    vec3(mul(uvCoord.x, 6), sub(uvCoord.y, mul(time, options.riverFlowSpeed * 1.5)), 0)
+    vec3(mul(uvCoord.x, 8), mul(sub(uvCoord.y, mul(time, options.riverFlowSpeed * 1.5)), 4), 0)
   ).x
   const edgeFoamMask = step(0.3, edgeFoamNoise)
   const edgeThreshold = step(edgeDistance, 0.2)
   const edgeFoam = mul(edgeThreshold, edgeFoamMask)
 
-  // Additional surface foam
+  // Additional surface foam - less stretched
   const surfaceFoam = mx_noise_vec3(
-    vec3(mul(uvCoord.x, 8), sub(uvCoord.y, mul(time, options.riverFlowSpeed * 2.0)), 0)
+    vec3(mul(uvCoord.x, 12), mul(sub(uvCoord.y, mul(time, options.riverFlowSpeed * 2.0)), 6), 0)
   ).x
   const surfaceFoamMask = mul(step(0.6, surfaceFoam), 0.3)
 
@@ -185,10 +185,10 @@ const createImpactFoam = (options: Required<WaterfallOptions>) => {
   const uvCoord = uv()
   const position = positionLocal
 
-  // Subtle vertex displacement
+  // Subtle vertex displacement with parametrized values
   const turbulenceStrength = 0.08
-  const noiseScale = 6.0
-  const animSpeed = 1.0
+  const noiseScale = options.impactNoiseScale
+  const animSpeed = options.impactAnimSpeed
 
   const noise1 = mx_fractal_noise_vec3(
     vec3(mul(position.x, noiseScale), mul(position.y, noiseScale), mul(time, animSpeed))
@@ -205,13 +205,17 @@ const createImpactFoam = (options: Required<WaterfallOptions>) => {
   const displacementZ = mul(noise3, turbulenceStrength)
   const displacedPosition = add(position, vec3(displacementX, displacementY, displacementZ))
 
-  // Increased foam color texture - more white
-  const foamNoise1 = mx_fractal_noise_vec3(vec3(mul(uvCoord.x, 6), mul(uvCoord.y, 6), mul(time, 1.5))).x
-  const foamNoise2 = mx_fractal_noise_vec3(vec3(mul(uvCoord.x, 12), mul(uvCoord.y, 12), mul(time, 2.0))).x
+  // Foam color texture using parametrized scale and speed
+  const foamNoise1 = mx_fractal_noise_vec3(
+    vec3(mul(uvCoord.x, noiseScale), mul(uvCoord.y, noiseScale), mul(time, animSpeed * 1.5))
+  ).x
+  const foamNoise2 = mx_fractal_noise_vec3(
+    vec3(mul(uvCoord.x, noiseScale * 2), mul(uvCoord.y, noiseScale * 2), mul(time, animSpeed * 2.0))
+  ).x
 
   // Create more white foam by lowering thresholds
-  const foamBase = step(0.2, foamNoise1) // Lower threshold = more foam
-  const foamDetail = step(0.4, foamNoise2) // Lower threshold = more foam
+  const foamBase = step(0.2, foamNoise1)
+  const foamDetail = step(0.4, foamNoise2)
   const foamMask = max(foamBase, foamDetail)
 
   const foamColor = vec4(color(options.impactFoamColor).rgb, options.impactFoamAlpha)
