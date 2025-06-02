@@ -49,6 +49,10 @@ type WaterfallOptions = {
   roundedAlpha?: number
   impactFoamAlpha?: number
   waveAlpha?: number
+
+  // Stream speeds
+  riverFlowSpeed?: number
+  fallFlowSpeed?: number
 }
 
 const defaultOptions: Required<WaterfallOptions> = {
@@ -81,17 +85,23 @@ const defaultOptions: Required<WaterfallOptions> = {
   roundedAlpha: 1.0,
   impactFoamAlpha: 0.9,
   waveAlpha: 0.8,
+
+  // Stream speeds
+  riverFlowSpeed: 0.2,
+  fallFlowSpeed: 1.5,
 }
 
 const createRiver = (options: Required<WaterfallOptions>) => {
   const uvCoord = uv()
-  const timeOffset = mul(time, 0.2)
+  const timeOffset = mul(time, options.riverFlowSpeed)
 
   // Base water color with alpha
   const waterColor = vec4(color(options.riverWaterColor).rgb, options.riverAlpha)
 
   // Deep blue layer with hard cartoon edges - faster animation
-  const deepBlueNoise = mx_fractal_noise_vec3(vec3(mul(uvCoord.x, 3), sub(uvCoord.y, mul(time, 0.15)), 0)).x // Added proper time animation
+  const deepBlueNoise = mx_fractal_noise_vec3(
+    vec3(mul(uvCoord.x, 3), sub(uvCoord.y, mul(time, options.riverFlowSpeed * 0.75)), 0)
+  ).x
   const deepBlueMask = step(0.4, deepBlueNoise)
   const deepBlueColor = vec4(color(options.riverDeepBlueColor).rgb, options.riverAlpha)
   const baseWater = mix(waterColor, deepBlueColor, deepBlueMask)
@@ -107,13 +117,17 @@ const createRiver = (options: Required<WaterfallOptions>) => {
   const edgeDistance = min(edgeDistanceLeft, edgeDistanceRight)
 
   // Animated edge foam
-  const edgeFoamNoise = mx_noise_vec3(vec3(mul(uvCoord.x, 6), sub(uvCoord.y, mul(time, 0.3)), 0)).x
+  const edgeFoamNoise = mx_noise_vec3(
+    vec3(mul(uvCoord.x, 6), sub(uvCoord.y, mul(time, options.riverFlowSpeed * 1.5)), 0)
+  ).x
   const edgeFoamMask = step(0.3, edgeFoamNoise)
   const edgeThreshold = step(edgeDistance, 0.2)
   const edgeFoam = mul(edgeThreshold, edgeFoamMask)
 
   // Additional surface foam
-  const surfaceFoam = mx_noise_vec3(vec3(mul(uvCoord.x, 8), sub(uvCoord.y, mul(time, 0.4)), 0)).x
+  const surfaceFoam = mx_noise_vec3(
+    vec3(mul(uvCoord.x, 8), sub(uvCoord.y, mul(time, options.riverFlowSpeed * 2.0)), 0)
+  ).x
   const surfaceFoamMask = mul(step(0.6, surfaceFoam), 0.3)
 
   const foamColor = vec4(color(options.riverFoamColor).rgb, options.riverAlpha)
@@ -126,7 +140,7 @@ const createRiver = (options: Required<WaterfallOptions>) => {
 
 const createFall = (options: Required<WaterfallOptions>) => {
   const uvCoord = uv()
-  const timeOffset = mul(time, 2.5)
+  const timeOffset = mul(time, options.fallFlowSpeed)
 
   // Base water color with alpha - no deep blue
   const baseWater = vec4(color(options.fallWaterColor).rgb, options.fallAlpha)
@@ -163,32 +177,6 @@ const createFall = (options: Required<WaterfallOptions>) => {
 
   const foamColor = vec4(color(options.fallFoamColor).rgb, options.fallAlpha)
   const colorNode = mix(baseWater, foamColor, finalFoamMask)
-
-  return { colorNode }
-}
-
-const createRoundedEdge = (options: Required<WaterfallOptions>) => {
-  const uvCoord = uv()
-  const timeOffset = mul(time, 1.0)
-
-  // Transition from river to fall
-  const transitionFactor = smoothstep(0.3, 0.7, uvCoord.y)
-
-  // River-like flow at top - no deep blue, just surface variation
-  const riverNoise = mx_fractal_noise_vec3(vec3(uvCoord.x, sub(uvCoord.y, mul(timeOffset, 0.1)), 0)).x
-  const riverBase = vec4(color(options.roundedWaterColor).rgb, options.roundedAlpha)
-  const surfaceColor = vec4(color(options.roundedSurfaceColor).rgb, options.roundedAlpha)
-  const riverColor = mix(riverBase, surfaceColor, mul(step(0.5, riverNoise), 0.5))
-
-  // Fall-like vertical lines at bottom - no deep blue
-  const verticalFlow = add(uvCoord.y, timeOffset)
-  const fallBase = vec4(color(options.roundedWaterColor).rgb, options.roundedAlpha)
-  const fallLines = mx_fractal_noise_vec3(vec3(mul(uvCoord.x, 12), verticalFlow, 0)).x
-  const fallFoam = step(0.4, fallLines)
-  const foamColor = vec4(color(options.roundedFoamColor).rgb, options.roundedAlpha)
-  const fallColor = mix(fallBase, foamColor, fallFoam)
-
-  const colorNode = mix(riverColor, fallColor, transitionFactor)
 
   return { colorNode }
 }
@@ -282,7 +270,6 @@ export const waterfall = (userOptions: WaterfallOptions = {}) => {
   return {
     river: createRiver(options),
     fall: createFall(options),
-    roundedEdge: createRoundedEdge(options),
     impactFoam: createImpactFoam(options),
     impactWaves: createImpactWaves(options),
   }
