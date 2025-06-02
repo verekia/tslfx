@@ -32,13 +32,19 @@ const Content = () => {
         <mesh geometry={River.geometry}>
           <meshBasicNodeMaterial colorNode={river.colorNode} transparent depthWrite={false} />
         </mesh>
-        <mesh geometry={ImpactFoam.geometry} renderOrder={2} position={[0, 0.36, -2]}>
+        <mesh geometry={ImpactFoam.geometry} renderOrder={2} position={[0, 0.36, -2]} scale={[0.95, 0.8, 0.9]}>
           <meshBasicNodeMaterial colorNode={impactFoam.colorNode} positionNode={impactFoam.positionNode} />
         </mesh>
-        <mesh geometry={RapidsFoam.geometry} renderOrder={2} position={[0, 0.07, 2.2]} scale={[1.227, 0.432, 0.668]}>
-          <meshBasicNodeMaterial colorNode={impactFoam.colorNode} positionNode={impactFoam.positionNode} />
+        <mesh geometry={RapidsFoam.geometry} renderOrder={2} position={[0, 0.04, 2.2]} scale={[1.227, 0.432, 0.668]}>
+          <meshBasicNodeMaterial
+            colorNode={impactFoam.colorNode}
+            positionNode={impactFoam.positionNode}
+            transparent
+            opacity={0.8}
+            depthWrite={false}
+          />
         </mesh>
-        <mesh geometry={ImpactWaves.geometry} renderOrder={1} scale={1.2} position={[0, 0.01, -1.76]}>
+        <mesh geometry={ImpactWaves.geometry} renderOrder={1} scale={1.2} position={[0, 0.01, -1.9]}>
           <meshBasicNodeMaterial
             colorNode={impactWaves.colorNode}
             transparent
