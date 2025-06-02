@@ -7,16 +7,45 @@ import { useMemo } from 'react'
 import { Mesh } from 'three'
 import { waterfall } from '@/shaders/waterfall/waterfall'
 
-const Content = () => {
-  const { geometry } = useGLTF(terrainSrc).nodes.waterfall as Mesh
+type Nodes = {
+  FallTop: Mesh
+  FallBottom: Mesh
+  River: Mesh
+  ImpactFoam: Mesh
+  ImpactWaves: Mesh
+  RoundedEdge: Mesh
+  Terrain: Mesh
+}
 
-  const { colorNode } = useMemo(() => waterfall({}), [])
+const Content = () => {
+  const { FallBottom, FallTop, River, ImpactFoam, ImpactWaves, RoundedEdge, Terrain } = useGLTF(terrainSrc)
+    .nodes as Nodes
+
+  const { river, fall, roundedEdge, impactFoam, impactWaves } = useMemo(() => waterfall(), [])
 
   return (
     <>
-      <group>
-        <mesh geometry={geometry} rotation-y={2.6} position={[1, -0.3, -3]}>
-          <meshBasicNodeMaterial colorNode={colorNode} transparent depthWrite={false} opacity={0.8} />
+      <group rotation-y={-0.4}>
+        <mesh geometry={FallTop.geometry}>
+          <meshBasicNodeMaterial colorNode={fall.colorNode} transparent depthWrite={false} opacity={0.8} />
+        </mesh>
+        <mesh geometry={River.geometry}>
+          <meshBasicNodeMaterial colorNode={river.colorNode} transparent depthWrite={false} opacity={0.8} />
+        </mesh>
+        <mesh geometry={RoundedEdge.geometry}>
+          <meshBasicNodeMaterial colorNode={roundedEdge.colorNode} transparent depthWrite={false} opacity={0.8} />
+        </mesh>
+        <mesh geometry={ImpactFoam.geometry}>
+          <meshBasicNodeMaterial colorNode={impactFoam.colorNode} transparent depthWrite={false} opacity={0.8} />
+        </mesh>
+        <mesh geometry={ImpactWaves.geometry}>
+          <meshBasicNodeMaterial colorNode={impactWaves.colorNode} transparent depthWrite={false} opacity={0.8} />
+        </mesh>
+        <mesh geometry={FallBottom.geometry}>
+          <meshBasicNodeMaterial colorNode={fall.colorNode} transparent depthWrite={false} opacity={0.8} />
+        </mesh>
+        <mesh geometry={Terrain.geometry}>
+          <meshLambertMaterial color="#3b0" />
         </mesh>
       </group>
       <directionalLight position={[5, 13, 10]} intensity={3} />
@@ -25,7 +54,7 @@ const Content = () => {
 }
 
 const WaterfallPage = () => (
-  <Page title="Waterfall">
+  <Page title="Waterfall" cameraPosition={[0, 2, 7]}>
     <Content />
   </Page>
 )

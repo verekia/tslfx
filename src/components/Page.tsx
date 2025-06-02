@@ -34,11 +34,13 @@ const Page = ({
   levaProps,
   children,
   is2D = false,
+  cameraPosition,
 }: {
   title?: string
   levaProps?: LevaRootProps
   children?: ReactNode
   is2D?: boolean
+  cameraPosition?: [number, number, number]
 }) => {
   const dark = useStoreValue('dark')
   const boundsPlane = useStoreValue('boundsPlane')
@@ -100,7 +102,7 @@ const Page = ({
             <h2 className="font-semibold">Misc</h2>
             <ul>
               <Item href="/grass">Grass</Item>
-              <Item href="/waterfall">Waterfall</Item>
+              {/* <Item href="/waterfall">Waterfall</Item> */}
               <Item href="/misc/water">Water</Item>
               <Item href="/misc/blending">Blending</Item>
               <Item href="/misc/template">Template</Item>
@@ -112,7 +114,7 @@ const Page = ({
             <Canvas>
               {env && <Environment preset="park" background />}
               <OrbitControls>
-                <PerspectiveCamera makeDefault position={is2D ? [0, 0, 7] : [0, 3, 5]} />
+                <PerspectiveCamera makeDefault position={cameraPosition ?? (is2D ? [0, 0, 7] : [0, 3, 5])} />
               </OrbitControls>
               {is2D ? <PlaneScene>{children}</PlaneScene> : children}
             </Canvas>
