@@ -1,14 +1,19 @@
-import { float, length, select, sqrt, vec2 } from 'three/tsl'
+import { float, length, select, ShaderNodeObject, sqrt, vec2 } from 'three/tsl'
+import type { Node } from 'three/webgpu'
 
 // https://iquilezles.org/articles/distfunctions2d/
 
 export const sdVesica = (
-  p: ReturnType<typeof vec2>,
-  r: ReturnType<typeof float> | number,
-  d: ReturnType<typeof float> | number
+  p: ShaderNodeObject<Node>,
+  r: ShaderNodeObject<Node> | number,
+  d: ShaderNodeObject<Node> | number
 ) => {
   const pAbs = p.abs()
-  const b = sqrt(float(r).mul(r).sub(float(d).mul(d)))
+  const b = sqrt(
+    float(r as number)
+      .mul(r)
+      .sub(float(d as number).mul(d))
+  )
 
   const condition = pAbs.y.sub(b).mul(d).greaterThan(pAbs.x.mul(b))
 

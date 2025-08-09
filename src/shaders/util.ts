@@ -17,6 +17,6 @@ export const multiplyRgbByAlpha = (color: ShaderNodeObject<Node> | ShaderNodeObj
 export const uvCenter = () => uv().sub(0.5)
 export const uvCenterNdc = () => uv().mul(2).sub(1)
 
-export const taylorInvSqrt = (r: ReturnType<typeof vec4>) => float(1.79284291400159).sub(r.mul(0.85373472095314))
+export const taylorInvSqrt = (r: ShaderNodeObject<Node>) => float(1.79284291400159).sub(r.mul(0.85373472095314))
 
 export const dot2 = (p: ShaderNodeObject<Node>) => dot(p, p)

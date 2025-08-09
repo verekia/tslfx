@@ -1,12 +1,27 @@
 import { Vector4 } from 'three'
-import { vec2, vec3, vec4, dot, abs, max, uniform, float, floor, step, min, mix } from 'three/tsl'
+import {
+  vec2,
+  vec3,
+  vec4,
+  dot,
+  abs,
+  max,
+  uniform,
+  float,
+  floor,
+  step,
+  min,
+  mix,
+  type ShaderNodeObject,
+} from 'three/tsl'
 import { multiplyRgbByAlpha, taylorInvSqrt, uvCenter } from './util'
+import type { Node } from 'three/webgpu'
 
 // https://github.com/stegu/webgl-noise
 
-const mod289 = (x: ReturnType<typeof vec3 | typeof vec4>) => x.sub(floor(x.mul(1 / 289)).mul(289))
+const mod289 = (x: ShaderNodeObject<Node>) => x.sub(floor(x.mul(1 / 289)).mul(289))
 
-const permute = (x: ReturnType<typeof vec4>) => mod289(x.mul(34).add(10).mul(x))
+const permute = (x: ShaderNodeObject<Node>) => mod289(x.mul(34).add(10).mul(x))
 
 const snoise = (v: ReturnType<typeof vec3>) => {
   const C = vec2(1 / 6, 1 / 3)
@@ -60,10 +75,10 @@ const snoise = (v: ReturnType<typeof vec3>) => {
   const a0 = b0.xzyw.add(s0.xzyw.mul(sh.xxyy))
   const a1 = b1.xzyw.add(s1.xzyw.mul(sh.zzww))
 
-  let p0 = vec3(a0.xy, h.x)
-  let p1 = vec3(a0.zw, h.y)
-  let p2 = vec3(a1.xy, h.z)
-  let p3 = vec3(a1.zw, h.w)
+  let p0: ShaderNodeObject<Node> = vec3(a0.xy, h.x)
+  let p1: ShaderNodeObject<Node> = vec3(a0.zw, h.y)
+  let p2: ShaderNodeObject<Node> = vec3(a1.xy, h.z)
+  let p3: ShaderNodeObject<Node> = vec3(a1.zw, h.w)
 
   const norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)))
 
@@ -72,7 +87,7 @@ const snoise = (v: ReturnType<typeof vec3>) => {
   p2 = p2.mul(norm.z)
   p3 = p3.mul(norm.w)
 
-  let m: ReturnType<typeof vec4> = max(float(0.5).sub(vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3))), 0)
+  let m: ShaderNodeObject<Node> = max(float(0.5).sub(vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3))), 0)
   m = m.mul(m)
 
   return float(105).mul(dot(m.mul(m), vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3))))

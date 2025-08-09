@@ -1,6 +1,6 @@
 import { Vector4 } from 'three'
 import { uniform, type ShaderNodeObject, vec2, float, rotate, PI, hash, Fn, Loop, vec4 } from 'three/tsl'
-import type { IndexNode, UniformNode } from 'three/webgpu'
+import type { IndexNode, Node } from 'three/webgpu'
 import { sdCircle } from './sdf/circle'
 import { sdVesica } from './sdf/vesica'
 import { multiplyRgbByAlpha, uvCenterNdc } from './util'
@@ -55,10 +55,7 @@ export const impact = (uniforms: Partial<ImpactUniforms> = {}, options: ImpactOp
   const circleSize = u.circleSizeStart.add(u.circleSizeEnd.sub(u.circleSizeStart).mul(radius)).sub(thickness)
   const circle = sdCircle(position, circleSize).abs().step(thickness).toVec4().mul(multiplyRgbByAlpha(u.circleColor))
 
-  const createVesica = (
-    pos: ReturnType<typeof vec2>,
-    se: ShaderNodeObject<UniformNode<number>> | ReturnType<typeof float>
-  ) => {
+  const createVesica = (pos: ShaderNodeObject<Node>, se: ShaderNodeObject<Node>) => {
     const vesicaR = float(1).mul(tWithOffset.oneMinus().mul(tWithOffset).mul(2))
     const vesicaD = float(0.8).mul(tWithOffset.oneMinus().mul(tWithOffset).mul(2))
 

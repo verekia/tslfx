@@ -1,10 +1,11 @@
 import { vec2, vec3, vec4, dot, abs, max, uv, select, type ShaderNodeObject, uniform, float } from 'three/tsl'
+import type { Node } from 'three/webgpu'
 
 // https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83#simplex-noise
 
-const permute = (x: ReturnType<typeof vec3>) => x.mul(34).add(1).mul(x).mod(289)
+const permute = (x: ShaderNodeObject<Node>) => x.mul(34).add(1).mul(x).mod(289)
 
-const snoise = (v: ReturnType<typeof vec2>) => {
+const snoise = (v: ShaderNodeObject<Node>) => {
   const C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439)
   const firstI = dot(v, C.yy).add(v).floor()
   const x0 = v.sub(firstI).add(dot(firstI, C.xx))

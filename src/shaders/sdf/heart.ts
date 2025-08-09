@@ -1,9 +1,10 @@
-import { max, min, mul, select, sign, sqrt, vec2 } from 'three/tsl'
+import { max, min, mul, select, type ShaderNodeObject, sign, sqrt, vec2 } from 'three/tsl'
 import { dot2 } from '../util'
+import type { Node } from 'three/webgpu'
 
 // https://iquilezles.org/articles/distfunctions2d/
 
-export const sdHeart = (n: ReturnType<typeof vec2>) => {
+export const sdHeart = (n: ShaderNodeObject<Node>) => {
   const p = vec2(n.x.abs(), n.y)
 
   return select(

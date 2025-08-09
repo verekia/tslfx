@@ -1,7 +1,6 @@
-import { float, vec2 } from 'three/tsl'
+import type { ShaderNodeObject } from 'three/tsl'
+import type { Node } from 'three/webgpu'
 
 // https://iquilezles.org/articles/distfunctions2d/
 
-export const sdCircle = (n: ReturnType<typeof vec2>, r: ReturnType<typeof float> | number) => {
-  return n.length().sub(r)
-}
+export const sdCircle = (n: ShaderNodeObject<Node>, r: ShaderNodeObject<Node> | number) => n.length().sub(r)
