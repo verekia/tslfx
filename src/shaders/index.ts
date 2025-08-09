@@ -1,5 +1,6 @@
 export * from './sdf/circle'
 export * from './sdf/heart'
+export * from './sdf/vesica'
 
 export * from './gradient'
 export * from './simplex2d'
