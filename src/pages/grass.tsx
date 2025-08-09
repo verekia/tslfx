@@ -16,7 +16,20 @@ const Content = () => {
   const { grass: grassGrid, terrain } = useGLTF(terrainSrc).nodes as Nodes
 
   const { geometry: fullGrassGeometry, positionNode } = useMemo(
-    () => grass({ geometry: grassGrid.geometry }),
+    () =>
+      grass({
+        geometry: grassGrid.geometry,
+        // colorA: '#4a0',
+        // colorB: '#6a0',
+        // windSpeed: 0.3,
+        // windSize: 1,
+        // windDisplacement: 0.1,
+        // heightVariation: { min: 0.2, max: 0.35 },
+        // bladesPerPoint: 20,
+        // widthVariation: { min: 0.05, max: 0.16 },
+        // baseDarkness: 0.3,
+        // clusterRadius: 0.4,
+      }),
     [grassGrid.geometry]
   )
 
@@ -24,7 +37,7 @@ const Content = () => {
     <>
       <group scale={0.3}>
         <mesh geometry={terrain.geometry}>
-          <meshLambertMaterial color="#290" side={DoubleSide} />
+          <meshLambertMaterial color="#000" side={DoubleSide} />
         </mesh>
         <mesh geometry={fullGrassGeometry}>
           <meshLambertNodeMaterial positionNode={positionNode} vertexColors />
