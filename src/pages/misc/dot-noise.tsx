@@ -5,6 +5,8 @@ import { useEffect, useMemo, useRef } from 'react'
 import { vec3, sin, floor, uniform } from 'three/tsl'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
 
+// https://mini.gmshaders.com/p/dot-noise by [Xor](https://www.xordev.com/)
+
 const DotNoiseMaterial = () => {
   const materialRef = useRef<MeshBasicNodeMaterial>(null)
 
