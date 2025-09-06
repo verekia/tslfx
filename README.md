@@ -144,6 +144,10 @@ const adjustedNoise = float(0.5).add(float(0.5).mul(rawNoise))
 const colorNode = mix(blue, lightBlue, adjustedNoise)
 ```
 
+### Dot Noise
+
+The TSL implementation of Dot Noise is based on [Xor](https://www.xordev.com)'s [paper](https://mini.gmshaders.com/p/dot-noise).
+
 ## Resources
 
 - [GLSL to TSL transpiler](https://threejs.org/examples/?q=webgpu#webgpu_tsl_transpiler)

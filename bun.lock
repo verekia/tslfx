@@ -28,7 +28,7 @@
         "zustand": "5.0.2",
       },
       "peerDependencies": {
-        "three": ">=0.171.0",
+        "three": ">=0.179.1",
       },
     },
   },
