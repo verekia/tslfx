@@ -51,7 +51,8 @@ export const scatter = (uniforms: Partial<ScatterUniforms> = {}, options: Scatte
 
     const rotatedPForVesica = rotate(pos, hash(se).mul(2).sub(1).mul(PI)).add(vec2(0, tWithOffset.mul(0.9)))
     const vesica = sdVesica(rotatedPForVesica, vesicaR, vesicaD)
-      .step(0.01)
+      .step(0)
+      .oneMinus()
       .toVec4()
       .mul(multiplyRgbByAlpha(u.vesicaColor))
     return vesica

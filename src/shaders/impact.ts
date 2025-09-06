@@ -53,7 +53,12 @@ export const impact = (uniforms: Partial<ImpactUniforms> = {}, options: ImpactOp
   const radius = tWithOffset.pow(0.5)
   const thickness = u.circleThickness.mul(0.5)
   const circleSize = u.circleSizeStart.add(u.circleSizeEnd.sub(u.circleSizeStart).mul(radius)).sub(thickness)
-  const circle = sdCircle(position, circleSize).abs().step(thickness).toVec4().mul(multiplyRgbByAlpha(u.circleColor))
+  const circle = sdCircle(position, circleSize)
+    .abs()
+    .step(thickness)
+    .oneMinus()
+    .toVec4()
+    .mul(multiplyRgbByAlpha(u.circleColor))
 
   const createVesica = (pos: ShaderNodeObject<Node>, se: ShaderNodeObject<Node>) => {
     const vesicaR = float(1).mul(tWithOffset.oneMinus().mul(tWithOffset).mul(2))
@@ -61,7 +66,8 @@ export const impact = (uniforms: Partial<ImpactUniforms> = {}, options: ImpactOp
 
     const rotatedPForVesica = rotate(pos, hash(se).mul(2).sub(1).mul(PI)).add(vec2(0, tWithOffset.mul(0.9)))
     const vesica = sdVesica(rotatedPForVesica, vesicaR, vesicaD)
-      .step(0.01)
+      .step(0)
+      .oneMinus()
       .toVec4()
       .mul(multiplyRgbByAlpha(u.vesicaColor))
     return vesica
