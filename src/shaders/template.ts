@@ -1,4 +1,4 @@
-import { uv, uniform, vec2, rotate, select, type ShaderNodeObject } from 'three/tsl'
+import { uv, uniform, vec2, rotate, select } from 'three/tsl'
 import { Vector2 } from 'three'
 import { Node, RotateNode } from 'three/webgpu'
 
@@ -10,7 +10,7 @@ type TemplateParams = {
   offset?: Vector2
   tileSize?: number
   tiled?: number
-  createNodes?: ({ position, time }: { position: ShaderNodeObject<RotateNode>; time: Node }) => {
+  createNodes?: ({ position, time }: { position: RotateNode; time: Node }) => {
     colorNode: Node
   }
 }

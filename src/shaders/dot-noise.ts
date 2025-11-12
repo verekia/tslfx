@@ -1,5 +1,4 @@
 import { uniform, vec3, cos, sin, dot, positionLocal, time, mat3 } from 'three/tsl'
-import type { ShaderNodeObject } from 'three/tsl'
 import type { Node } from 'three/webgpu'
 
 type DotNoiseParams = {
@@ -11,7 +10,7 @@ const defaultParams: Required<DotNoiseParams> = { scale: 1, speed: 1 }
 
 // https://mini.gmshaders.com/p/dot-noise by [Xor](https://www.xordev.com/)
 
-export const dotNoiseFn = (p: ShaderNodeObject<Node>) => {
+export const dotNoiseFn = (p: Node) => {
   const PHI = 1.618033988
   const GOLD = mat3(
     -0.571464913,

@@ -12,23 +12,22 @@ import {
   step,
   min,
   mix,
-  type ShaderNodeObject,
 } from 'three/tsl'
 import { multiplyRgbByAlpha, taylorInvSqrt, uvCenter } from './util'
 import type { Node } from 'three/webgpu'
 
 // https://github.com/stegu/webgl-noise
 
-const mod289 = (x: ShaderNodeObject<Node>) => x.sub(floor(x.mul(1 / 289)).mul(289))
+const mod289 = (x: Node): Node => x.sub(floor(x.mul(1 / 289)).mul(289))
 
-const permute = (x: ShaderNodeObject<Node>) => mod289(x.mul(34).add(10).mul(x))
+const permute = (x: Node) => mod289(x.mul(34).add(10).mul(x))
 
 const snoise = (v: ReturnType<typeof vec3>) => {
   const C = vec2(1 / 6, 1 / 3)
   const D = vec4(0, 0.5, 1, 2)
 
   // First corner
-  let i = floor(v.add(dot(v, C.yyy)))
+  let i: Node = floor(v.add(dot(v, C.yyy)))
   const x0 = v.sub(i).add(dot(i, C.xxx))
 
   const g = step(x0.yzx, x0.xyz)
@@ -40,7 +39,6 @@ const snoise = (v: ReturnType<typeof vec3>) => {
   const x2 = x0.sub(i2).add(C.yyy)
   const x3 = x0.sub(D.yyy)
 
-  // @ts-expect-error
   i = mod289(i)
 
   const p = permute(
@@ -75,10 +73,10 @@ const snoise = (v: ReturnType<typeof vec3>) => {
   const a0 = b0.xzyw.add(s0.xzyw.mul(sh.xxyy))
   const a1 = b1.xzyw.add(s1.xzyw.mul(sh.zzww))
 
-  let p0: ShaderNodeObject<Node> = vec3(a0.xy, h.x)
-  let p1: ShaderNodeObject<Node> = vec3(a0.zw, h.y)
-  let p2: ShaderNodeObject<Node> = vec3(a1.xy, h.z)
-  let p3: ShaderNodeObject<Node> = vec3(a1.zw, h.w)
+  let p0: Node = vec3(a0.xy, h.x)
+  let p1: Node = vec3(a0.zw, h.y)
+  let p2: Node = vec3(a1.xy, h.z)
+  let p3: Node = vec3(a1.zw, h.w)
 
   const norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)))
 
@@ -87,7 +85,7 @@ const snoise = (v: ReturnType<typeof vec3>) => {
   p2 = p2.mul(norm.z)
   p3 = p3.mul(norm.w)
 
-  let m: ShaderNodeObject<Node> = max(float(0.5).sub(vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3))), 0)
+  let m: Node = max(float(0.5).sub(vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3))), 0)
   m = m.mul(m)
 
   return float(105).mul(dot(m.mul(m), vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3))))

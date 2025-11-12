@@ -1,5 +1,5 @@
 import { Vector4 } from 'three'
-import { uniform, type ShaderNodeObject, vec2, float, rotate, PI, hash, Fn, Loop, vec4 } from 'three/tsl'
+import { uniform, vec2, float, rotate, PI, hash, Fn, Loop, vec4 } from 'three/tsl'
 import type { IndexNode, Node } from 'three/webgpu'
 import { sdVesica } from './sdf/vesica'
 import { multiplyRgbByAlpha, uvCenterNdc } from './util'
@@ -18,7 +18,7 @@ export const defaultScatterUniforms = {
 export type ScatterUniforms = typeof defaultScatterUniforms
 
 export type ScatterOptions = {
-  instanceIndex?: ShaderNodeObject<IndexNode>
+  instanceIndex?: IndexNode
   instanceCount?: number
 }
 
@@ -45,7 +45,7 @@ export const scatter = (uniforms: Partial<ScatterUniforms> = {}, options: Scatte
       ? u.time.add(options.instanceIndex.toFloat().div(options.instanceCount).mul(0.3)).mod(1)
       : u.time
 
-  const createVesica = (pos: ShaderNodeObject<Node>, se: ShaderNodeObject<Node>) => {
+  const createVesica = (pos: Node, se: Node) => {
     const vesicaR = float(1).mul(tWithOffset.oneMinus().mul(tWithOffset).mul(2))
     const vesicaD = float(0.8).mul(tWithOffset.oneMinus().mul(tWithOffset).mul(2))
 
@@ -60,7 +60,10 @@ export const scatter = (uniforms: Partial<ScatterUniforms> = {}, options: Scatte
 
   const vesicas = Fn(() => {
     const result = vec4(0).toVar()
-    return Loop(u.vesicaCount, ({ i }) => result.addAssign(createVesica(position, seedAndIndex.add(i))))
+    Loop(u.vesicaCount, ({ i }) => {
+      result.addAssign(createVesica(position, seedAndIndex.add(i)))
+    })
+    return result
   })()
 
   const colorNode = vesicas

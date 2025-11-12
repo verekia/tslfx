@@ -1,5 +1,5 @@
 import { Vector4 } from 'three'
-import { uniform, type ShaderNodeObject, vec2, float, rotate, PI, hash, Fn, Loop, vec4 } from 'three/tsl'
+import { uniform, vec2, float, rotate, PI, hash, Fn, Loop, vec4 } from 'three/tsl'
 import type { IndexNode, Node } from 'three/webgpu'
 import { sdCircle } from './sdf/circle'
 import { sdVesica } from './sdf/vesica'
@@ -21,7 +21,7 @@ export const defaultImpactUniforms = {
 export type ImpactUniforms = typeof defaultImpactUniforms
 
 export type ImpactOptions = {
-  instanceIndex?: ShaderNodeObject<IndexNode>
+  instanceIndex?: IndexNode
   instanceCount?: number
 }
 
@@ -60,7 +60,7 @@ export const impact = (uniforms: Partial<ImpactUniforms> = {}, options: ImpactOp
     .toVec4()
     .mul(multiplyRgbByAlpha(u.circleColor))
 
-  const createVesica = (pos: ShaderNodeObject<Node>, se: ShaderNodeObject<Node>) => {
+  const createVesica = (pos: Node, se: Node) => {
     const vesicaR = float(1).mul(tWithOffset.oneMinus().mul(tWithOffset).mul(2))
     const vesicaD = float(0.8).mul(tWithOffset.oneMinus().mul(tWithOffset).mul(2))
 
@@ -75,7 +75,10 @@ export const impact = (uniforms: Partial<ImpactUniforms> = {}, options: ImpactOp
 
   const vesicas = Fn(() => {
     const result = vec4(0).toVar()
-    return Loop(u.vesicaCount, ({ i }) => result.addAssign(createVesica(position, seedAndIndex.add(i))))
+    Loop(u.vesicaCount, ({ i }) => {
+      result.addAssign(createVesica(position, seedAndIndex.add(i)))
+    })
+    return result
   })()
 
   const colorNode = circle.add(vesicas)

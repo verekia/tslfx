@@ -1,6 +1,6 @@
 {
   "name": "tslfx",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -35,7 +35,7 @@
     "dist"
   ],
   "peerDependencies": {
-    "three": ">=0.180.0"
+    "three": ">=0.181.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.2.0",
@@ -44,7 +44,7 @@
     "@types/node": "22.10.2",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
-    "@types/three": "0.180.0",
+    "@types/three": "0.181.0",
     "eslint": "9.17.0",
     "eslint-config-next": "15.3.4",
     "husky": "9.1.7",
@@ -56,14 +56,14 @@
     "react-dom": "19.1.0",
     "serve": "14.2.4",
     "stats-gl": "2.4.2",
-    "three": "0.180.0",
+    "three": "0.181.1",
     "tailwindcss": "3.4.17",
     "tsup": "8.3.5",
     "typescript": "5.8.3",
     "zustand": "5.0.2"
   },
   "overrides": {
-    "three": "0.180.0",
+    "three": "0.181.1",
     "three-stdlib": "2.36.0"
   },
   "patchedDependencies": {

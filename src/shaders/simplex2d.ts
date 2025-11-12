@@ -1,11 +1,11 @@
-import { vec2, vec3, vec4, dot, abs, max, uv, select, type ShaderNodeObject, uniform, float } from 'three/tsl'
+import { vec2, vec3, vec4, dot, abs, max, uv, select, uniform, float } from 'three/tsl'
 import type { Node } from 'three/webgpu'
 
 // https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83#simplex-noise
 
-const permute = (x: ShaderNodeObject<Node>) => x.mul(34).add(1).mul(x).mod(289)
+const permute = (x: Node) => x.mul(34).add(1).mul(x).mod(289)
 
-const snoise = (v: ShaderNodeObject<Node>) => {
+const snoise = (v: Node) => {
   const C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439)
   const firstI = dot(v, C.yy).add(v).floor()
   const x0 = v.sub(firstI).add(dot(firstI, C.xx))
@@ -14,7 +14,7 @@ const snoise = (v: ShaderNodeObject<Node>) => {
   const i = firstI.mod(289)
   const p = permute(permute(vec3(0, i1.y, 1).add(i.y)).add(vec3(0, i1.x, 1).add(i.x)))
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let m: ShaderNodeObject<any> = max(vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)).negate().add(0.5), 0)
+  let m: Node = max(vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)).negate().add(0.5), 0)
   m = m.mul(m)
   m = m.mul(m)
   const x = p.mul(C.www).fract().mul(2).sub(1)

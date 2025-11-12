@@ -1,12 +1,12 @@
-import { float, length, select, type ShaderNodeObject, sqrt, vec2 } from 'three/tsl'
+import { float, length, select, sqrt, vec2 } from 'three/tsl'
 import type { Node } from 'three/webgpu'
 
 // https://iquilezles.org/articles/distfunctions2d/
 
 export const sdVesica = (
-  p: ShaderNodeObject<Node>,
-  r: ShaderNodeObject<Node> | number,
-  d: ShaderNodeObject<Node> | number
+  p: Node,
+  r: Node | number,
+  d: Node | number
 ) => {
   const pAbs = p.abs()
   const b = sqrt(
