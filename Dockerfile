@@ -1,11 +1,11 @@
 # Build stage
 
-FROM oven/bun:1.1.36-alpine AS builder
+FROM oven/bun:1.3.4-alpine AS builder
 
 WORKDIR /app
 
 COPY bun.lock package.json ./
-COPY patches ./patches
+COPY patches patches
 
 RUN bun i
 

@@ -1,0 +1,13 @@
+diff --git a/build/three.webgpu.js b/build/three.webgpu.js
+index 31ff163d67f4cc5dec060a11bc7151c64f949fd9..823c1c35bca5411a27cbf52c5c3a188001fe0445 100644
+--- a/build/three.webgpu.js
++++ b/build/three.webgpu.js
+@@ -70604,7 +70604,7 @@ const GPUPrimitiveTopology = {
+ 	TriangleStrip: 'triangle-strip',
+ };
+ 
+-const GPUShaderStage = ( typeof self !== 'undefined' ) ? self.GPUShaderStage : { VERTEX: 1, FRAGMENT: 2, COMPUTE: 4 };
++const GPUShaderStage = ( typeof self !== 'undefined' && self.GPUShaderStage ) ? self.GPUShaderStage : { VERTEX: 1, FRAGMENT: 2, COMPUTE: 4 };
+ 
+ const GPUCompareFunction = {
+ 	Never: 'never',

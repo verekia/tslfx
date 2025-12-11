@@ -63,5 +63,8 @@
   },
   "overrides": {
     "three": "0.182.0"
+  },
+  "patchedDependencies": {
+    "three@0.182.0": "patches/three@0.182.0.patch"
   }
 }
