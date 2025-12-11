@@ -1,13 +1,13 @@
 {
   "name": "tslfx",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "serve out",
-    "lint": "next lint",
+    "lint": "eslint .",
     "tsup": "tsup --tsconfig tsup.tsconfig.json",
     "pub": "bun run tsup && npm publish",
     "format": "prettier --write .",
@@ -35,38 +35,33 @@
     "dist"
   ],
   "peerDependencies": {
-    "three": ">=0.181.1"
+    "three": ">=0.182.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "3.2.0",
-    "@react-three/drei": "10.7.4",
-    "@react-three/fiber": "9.3.0",
-    "@types/node": "22.10.2",
-    "@types/react": "19.0.2",
-    "@types/react-dom": "19.0.2",
-    "@types/three": "0.181.0",
-    "eslint": "9.17.0",
-    "eslint-config-next": "15.3.4",
+    "@eslint/eslintrc": "3.3.3",
+    "@react-three/drei": "10.7.7",
+    "@react-three/fiber": "9.4.2",
+    "@types/node": "25.0.0",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@types/three": "0.182.0",
+    "eslint": "9.39.1",
+    "eslint-config-next": "16.0.8",
     "husky": "9.1.7",
-    "leva": "0.9.34",
-    "next": "15.3.4",
-    "postcss": "8.4.49",
-    "prettier": "3.4.2",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "serve": "14.2.4",
-    "stats-gl": "2.4.2",
-    "three": "0.181.1",
+    "leva": "0.10.1",
+    "next": "16.0.8",
+    "postcss": "8.5.6",
+    "prettier": "3.7.4",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
+    "serve": "14.2.5",
+    "three": "0.182.0",
     "tailwindcss": "3.4.17",
-    "tsup": "8.3.5",
-    "typescript": "5.8.3",
-    "zustand": "5.0.2"
+    "tsup": "8.5.1",
+    "typescript": "5.9.3",
+    "zustand": "5.0.9"
   },
   "overrides": {
-    "three": "0.181.1",
-    "three-stdlib": "2.36.0"
-  },
-  "patchedDependencies": {
-    "leva@0.9.34": "patches/leva@0.9.34.patch"
+    "three": "0.182.0"
   }
 }
