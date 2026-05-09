@@ -42,7 +42,7 @@ const ShapeMaterial = () => {
   const [controls, setControls] = useControls(() => {
     // @ts-expect-error
     const presets: Record<(typeof shapePresets)[number]['name'], ReturnType<typeof button>> = Object.fromEntries(
-      shapePresets.map((preset) => [
+      shapePresets.map(preset => [
         preset.name,
         button(() => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -66,7 +66,7 @@ const ShapeMaterial = () => {
             autoplay: true,
           })
         }),
-      ])
+      ]),
     )
 
     return {

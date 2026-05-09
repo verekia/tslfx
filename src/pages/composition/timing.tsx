@@ -22,14 +22,14 @@ const timings = {
 }
 
 const updateShape = (
-  shape: {
+  target: {
     uniforms: { time: UniformNode<number>; visible: UniformNode<number> }
   },
   timing: { startAt: number; duration: number },
-  totalTime: number
+  totalTime: number,
 ) => {
-  shape.uniforms.time.value = clamp((totalTime - timing.startAt) / timing.duration, 0, 1)
-  shape.uniforms.visible.value = Number(shape.uniforms.time.value !== 0 && shape.uniforms.time.value !== 1) as 0 | 1
+  target.uniforms.time.value = clamp((totalTime - timing.startAt) / timing.duration, 0, 1)
+  target.uniforms.visible.value = Number(target.uniforms.time.value !== 0 && target.uniforms.time.value !== 1) as 0 | 1
 }
 
 const TripleExplosionMaterial = () => {
@@ -162,7 +162,7 @@ const TripleExplosionMaterial = () => {
         endOffset: new Vector2(0, -0.4),
       }),
     ],
-    []
+    [],
   )
 
   const combined = useMemo(
@@ -177,9 +177,9 @@ const TripleExplosionMaterial = () => {
         explosion1.nodes.colorNode,
         drop1.nodes.colorNode,
         drop2.nodes.colorNode,
-        drop3.nodes.colorNode
+        drop3.nodes.colorNode,
       ),
-    [drop1, drop2, drop3, explosion1, blow1, explosion2, blow2, explosion3, blow3]
+    [drop1, drop2, drop3, explosion1, blow1, explosion2, blow2, explosion3, blow3],
   )
 
   useFrame((_, delta) => {

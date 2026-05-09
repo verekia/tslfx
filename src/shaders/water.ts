@@ -43,8 +43,8 @@ export const water = (params: WaterParams) => {
     rainbowFloat = rainbowFloat.add(
       amplitude.mul(
         // @ts-expect-error
-        getFloatValue(space.mul(frequency).sub(fbmStep.mul(i)), time)
-      )
+        getFloatValue(space.mul(frequency).sub(fbmStep.mul(i)), time),
+      ),
     )
   }
 

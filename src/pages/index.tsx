@@ -13,12 +13,12 @@ const IndexPage = () => {
       </Head>
       <Page />
       <div
-        className={`fixed top-0 left-0 h-screen w-screen flex flex-col items-center justify-center gap-1 ${dark ? 'text-white' : 'text-black'}`}
+        className={`fixed left-0 top-0 flex h-screen w-screen flex-col items-center justify-center gap-1 ${dark ? 'text-white' : 'text-black'}`}
       >
-        <h1 className="text-center text-5xl font-bold mb-3">✨ TSLFX ✨</h1>
+        <h1 className="mb-3 text-center text-5xl font-bold">✨ TSLFX ✨</h1>
         <p className="text-center text-xl">
           <Link
-            className="underline mb-3"
+            className="mb-3 underline"
             href="https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language"
             target="_blank"
           >
@@ -27,7 +27,7 @@ const IndexPage = () => {
           VFX library
         </p>
         <p>
-          <Link className="underline text-xl" href="https://github.com/verekia/tslfx" target="_blank">
+          <Link className="text-xl underline" href="https://github.com/verekia/tslfx" target="_blank">
             GitHub
           </Link>
         </p>

@@ -17,13 +17,13 @@ const ParticlesMaterial = () => {
         vesicaColor: new Vector4(0, 0.7, 1, 1),
         vesicaCount: 2,
       },
-      { instanceIndex, instanceCount }
+      { instanceIndex, instanceCount },
     )
 
     const basePosition = vec3(
       cos(instanceIndex.toFloat()).mul(2),
       range(-0.3, 0.3),
-      sin(instanceIndex.toFloat()).mul(2)
+      sin(instanceIndex.toFloat()).mul(2),
     )
     const rotationSpeed = basePosition.y.mul(1.1)
     const rotationAngle = time.mul(rotationSpeed)
@@ -31,7 +31,7 @@ const ParticlesMaterial = () => {
     const rotatedPosition = vec3(
       basePosition.x.mul(cos(rotationAngle)).sub(basePosition.z.mul(sin(rotationAngle))),
       basePosition.y,
-      basePosition.x.mul(sin(rotationAngle)).add(basePosition.z.mul(cos(rotationAngle)))
+      basePosition.x.mul(sin(rotationAngle)).add(basePosition.z.mul(cos(rotationAngle))),
     )
 
     const positionNode = rotatedPosition.add(vec3(range(-0.1, 0.1), range(-0.1, 0.1), range(-0.1, 0.1)))
@@ -44,7 +44,7 @@ const ParticlesMaterial = () => {
   })
 
   return (
-    <instancedMesh args={[, , instanceCount]}>
+    <instancedMesh args={[undefined, undefined, instanceCount]}>
       <planeGeometry />
       <spriteNodeMaterial {...nodes} transparent blending={AdditiveBlending} depthWrite={false} />
     </instancedMesh>

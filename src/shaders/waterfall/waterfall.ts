@@ -128,7 +128,7 @@ const createRiver = (options: Required<WaterfallOptions>) => {
 
   // Deep blue layer with hard cartoon edges - parametrized scale
   const deepBlueNoise = mx_fractal_noise_vec3(
-    vec3(mul(uvCoord.x, options.riverDeepBlueScale), sub(uvCoord.y, mul(time, options.riverFlowSpeed * 0.75)), 0)
+    vec3(mul(uvCoord.x, options.riverDeepBlueScale), sub(uvCoord.y, mul(time, options.riverFlowSpeed * 0.75)), 0),
   ).x
   const deepBlueMask = step(0.4, deepBlueNoise)
   const deepBlueColor = vec4(color(options.riverDeepBlueColor).rgb, options.riverAlpha)
@@ -146,7 +146,11 @@ const createRiver = (options: Required<WaterfallOptions>) => {
 
   // Animated edge foam - parametrized scale
   const edgeFoamNoise = mx_noise_vec3(
-    vec3(mul(uvCoord.x, options.riverEdgeFoamScale), mul(sub(uvCoord.y, mul(time, options.riverFlowSpeed * 1.5)), 4), 0)
+    vec3(
+      mul(uvCoord.x, options.riverEdgeFoamScale),
+      mul(sub(uvCoord.y, mul(time, options.riverFlowSpeed * 1.5)), 4),
+      0,
+    ),
   ).x
   const edgeFoamMask = step(0.3, edgeFoamNoise)
   const edgeThreshold = step(edgeDistance, 0.2)
@@ -157,8 +161,8 @@ const createRiver = (options: Required<WaterfallOptions>) => {
     vec3(
       mul(uvCoord.x, options.riverSurfaceFoamScale),
       mul(sub(uvCoord.y, mul(time, options.riverFlowSpeed * 2.0)), 6),
-      0
-    )
+      0,
+    ),
   ).x
   const surfaceFoamMask = mul(step(0.6, surfaceFoam), 0.3)
 
@@ -206,7 +210,7 @@ const createFall = (options: Required<WaterfallOptions>) => {
   // Add horizontal variation - parametrized scale
   const horizontalNoise = mul(
     mx_noise_vec3(vec3(mul(uvCoord.x, options.fallHorizontalScale), mul(verticalFlow, 0.5), 5)).x,
-    0.15
+    0.15,
   )
   const finalFoamMask = step(0.1, add(combinedFoam, horizontalNoise))
 
@@ -226,13 +230,13 @@ const createImpactFoam = (options: Required<WaterfallOptions>) => {
   const animSpeed = options.impactAnimSpeed
 
   const noise1 = mx_fractal_noise_vec3(
-    vec3(mul(position.x, noiseScale), mul(position.y, noiseScale), mul(time, animSpeed))
+    vec3(mul(position.x, noiseScale), mul(position.y, noiseScale), mul(time, animSpeed)),
   ).x
   const noise2 = mx_fractal_noise_vec3(
-    vec3(mul(position.z, noiseScale * 1.5), mul(position.y, noiseScale * 1.5), mul(time, animSpeed * 1.3))
+    vec3(mul(position.z, noiseScale * 1.5), mul(position.y, noiseScale * 1.5), mul(time, animSpeed * 1.3)),
   ).x
   const noise3 = mx_fractal_noise_vec3(
-    vec3(mul(position.x, noiseScale * 0.8), mul(position.z, noiseScale * 0.8), mul(time, animSpeed * 0.7))
+    vec3(mul(position.x, noiseScale * 0.8), mul(position.z, noiseScale * 0.8), mul(time, animSpeed * 0.7)),
   ).x
 
   const displacementX = mul(noise1, turbulenceStrength)
@@ -242,10 +246,10 @@ const createImpactFoam = (options: Required<WaterfallOptions>) => {
 
   // Foam color texture using parametrized scale and speed
   const foamNoise1 = mx_fractal_noise_vec3(
-    vec3(mul(uvCoord.x, noiseScale), mul(uvCoord.y, noiseScale), mul(time, animSpeed * 1.5))
+    vec3(mul(uvCoord.x, noiseScale), mul(uvCoord.y, noiseScale), mul(time, animSpeed * 1.5)),
   ).x
   const foamNoise2 = mx_fractal_noise_vec3(
-    vec3(mul(uvCoord.x, noiseScale * 2), mul(uvCoord.y, noiseScale * 2), mul(time, animSpeed * 2.0))
+    vec3(mul(uvCoord.x, noiseScale * 2), mul(uvCoord.y, noiseScale * 2), mul(time, animSpeed * 2.0)),
   ).x
 
   // Create more white foam by lowering thresholds

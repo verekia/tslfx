@@ -3,16 +3,12 @@ import type { Node } from 'three/webgpu'
 
 // https://iquilezles.org/articles/distfunctions2d/
 
-export const sdVesica = (
-  p: Node,
-  r: Node | number,
-  d: Node | number
-) => {
+export const sdVesica = (p: Node, r: Node | number, d: Node | number) => {
   const pAbs = p.abs()
   const b = sqrt(
     float(r as number)
       .mul(r)
-      .sub(float(d as number).mul(d))
+      .sub(float(d as number).mul(d)),
   )
 
   const condition = pAbs.y.sub(b).mul(d).greaterThan(pAbs.x.mul(b))

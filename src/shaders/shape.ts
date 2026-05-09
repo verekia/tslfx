@@ -74,9 +74,9 @@ export const shape = (params?: Partial<ShapeParams>) => {
       // For second half, normalize 0.5-1 to 1-0
       float(1).sub(u.time.sub(0.5).mul(2)),
       // For first half, normalize 0-0.5 to 0-1
-      u.time.mul(2)
+      u.time.mul(2),
     ),
-    u.time
+    u.time,
   )
 
   const easedTime = select(
@@ -85,8 +85,8 @@ export const shape = (params?: Partial<ShapeParams>) => {
     select(
       u.easing.equal(2),
       easeOutCubic(boomerangTime),
-      select(u.easing.equal(3), easeInOutCubic(boomerangTime), linear(boomerangTime))
-    )
+      select(u.easing.equal(3), easeInOutCubic(boomerangTime), linear(boomerangTime)),
+    ),
   )
 
   const color = mix(u.startColor, u.endColor, easedTime)

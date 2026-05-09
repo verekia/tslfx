@@ -2,16 +2,65 @@
   "name": "tslfx",
   "version": "0.6.0",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "portless tslfx next dev --webpack",
     "build": "next build --webpack",
     "start": "serve out",
-    "lint": "eslint .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "typecheck": "tsc --noEmit",
+    "warden": "warden",
+    "all": "bun run format:check && bun run lint && bun run typecheck && bun run warden",
     "tsup": "tsup --tsconfig tsup.tsconfig.json",
     "pub": "bun run tsup && npm publish",
-    "format": "prettier --write .",
     "prepare": "husky"
+  },
+  "devDependencies": {
+    "@react-three/drei": "10.7.7",
+    "@react-three/fiber": "9.4.2",
+    "@types/node": "25.0.0",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@types/three": "0.182.0",
+    "@verekia/warden": "0.0.3",
+    "babel-plugin-react-compiler": "1.0.0",
+    "husky": "9.1.7",
+    "leva": "0.10.1",
+    "next": "16.0.8",
+    "oxfmt": "0.48.0",
+    "oxlint": "1.63.0",
+    "portless": "0.13.0",
+    "postcss": "8.5.6",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
+    "serve": "14.2.5",
+    "tailwindcss": "3.4.17",
+    "three": "0.182.0",
+    "tsup": "8.5.1",
+    "typescript": "5.9.3",
+    "zustand": "5.0.9"
+  },
+  "peerDependencies": {
+    "three": ">=0.182.0"
+  },
+  "overrides": {
+    "three": "0.182.0"
+  },
+  "patchedDependencies": {
+    "three@0.182.0": "patches/three@0.182.0.patch"
   },
   "tsup": {
     "entry": [
@@ -23,48 +72,5 @@
       "esm"
     ],
     "dts": true
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "files": [
-    "dist"
-  ],
-  "peerDependencies": {
-    "three": ">=0.182.0"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "3.3.3",
-    "@react-three/drei": "10.7.7",
-    "@react-three/fiber": "9.4.2",
-    "@types/node": "25.0.0",
-    "@types/react": "19.2.7",
-    "@types/react-dom": "19.2.3",
-    "@types/three": "0.182.0",
-    "eslint": "9.39.1",
-    "eslint-config-next": "16.0.8",
-    "husky": "9.1.7",
-    "leva": "0.10.1",
-    "next": "16.0.8",
-    "postcss": "8.5.6",
-    "prettier": "3.7.4",
-    "react": "19.2.1",
-    "react-dom": "19.2.1",
-    "serve": "14.2.5",
-    "three": "0.182.0",
-    "tailwindcss": "3.4.17",
-    "tsup": "8.5.1",
-    "typescript": "5.9.3",
-    "zustand": "5.0.9"
-  },
-  "overrides": {
-    "three": "0.182.0"
-  },
-  "patchedDependencies": {
-    "three@0.182.0": "patches/three@0.182.0.patch"
   }
 }

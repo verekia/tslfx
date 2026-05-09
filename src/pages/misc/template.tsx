@@ -37,7 +37,7 @@ const TemplateMaterial = () => {
           colorNode: sdHeart(p.add(vec2(0, 0.59))).add(t),
         }),
       }),
-    []
+    [],
   )
 
   uniforms.scale.value = scale

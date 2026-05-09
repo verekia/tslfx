@@ -80,7 +80,7 @@ const ImpactMaterial = () => {
     setControls,
   ] = useControls(() => {
     const presets: Record<string, ButtonInput> = Object.fromEntries(
-      impactPresets.map((preset) => [
+      impactPresets.map(preset => [
         preset.name,
         button(() => {
           const { seed, aspect, ...rest } = preset.uniforms
@@ -102,7 +102,7 @@ const ImpactMaterial = () => {
             time: 0,
           })
         }),
-      ])
+      ]),
     )
 
     return {

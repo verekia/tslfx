@@ -152,7 +152,7 @@ export const waterfall = (options: {
       const stretchedFlowingUV = vec3(
         uvCoords.x,
         mul(deepBlueFlowingY, verticalStretchFactor),
-        mul(time, deepBlueNoiseSpeed)
+        mul(time, deepBlueNoiseSpeed),
       )
       const noise = mx_fractal_noise_vec3(mul(stretchedFlowingUV, deepBlueScale)).xxx
       const deepBlueBand = step(0, noise)
@@ -160,7 +160,7 @@ export const waterfall = (options: {
       return mix(
         vec3(lightBlueColor.r, lightBlueColor.g, lightBlueColor.b),
         vec3(deepBlueColor.r, deepBlueColor.g, deepBlueColor.b),
-        deepBlueBand
+        deepBlueBand,
       )
     })()
 
@@ -169,14 +169,14 @@ export const waterfall = (options: {
       const slowFlow = add(flowingY, mul(time, slowFoamSpeed))
       const stretchedSlowFlow = mul(slowFlow, verticalStretchFactor)
       const horizontalNoise1 = mx_noise_float(
-        vec3(mul(uvCoords.x, slowFoamScaleX), mul(stretchedSlowFlow, slowFoamScaleY), mul(time, 0.2))
+        vec3(mul(uvCoords.x, slowFoamScaleX), mul(stretchedSlowFlow, slowFoamScaleY), mul(time, 0.2)),
       )
       const horizontalNoise2 = mx_noise_float(
         vec3(
           mul(uvCoords.x, mul(slowFoamScaleX, 0.7)),
           mul(stretchedSlowFlow, mul(slowFoamScaleY, 0.8)),
-          mul(time, 0.15)
-        )
+          mul(time, 0.15),
+        ),
       )
 
       const layeredHorizontal = add(mul(horizontalNoise1, 0.6), mul(horizontalNoise2, 0.4))
@@ -190,14 +190,14 @@ export const waterfall = (options: {
       const mediumFlow = add(flowingY, mul(time, mediumFoamSpeed))
       const stretchedMediumFlow = mul(mediumFlow, verticalStretchFactor)
       const mediumNoise1 = mx_noise_float(
-        vec3(mul(uvCoords.x, mediumFoamScaleX), mul(stretchedMediumFlow, mediumFoamScaleY), mul(time, 0.4))
+        vec3(mul(uvCoords.x, mediumFoamScaleX), mul(stretchedMediumFlow, mediumFoamScaleY), mul(time, 0.4)),
       )
       const mediumNoise2 = mx_noise_float(
         vec3(
           mul(uvCoords.x, mul(mediumFoamScaleX, 0.9)),
           mul(stretchedMediumFlow, mul(mediumFoamScaleY, 1.2)),
-          mul(time, 0.35)
-        )
+          mul(time, 0.35),
+        ),
       )
 
       const layeredMedium = add(mul(mediumNoise1, 0.5), mul(mediumNoise2, 0.5))
@@ -211,14 +211,14 @@ export const waterfall = (options: {
       const fastFlow = add(flowingY, mul(time, fastFoamSpeed))
       const stretchedFastFlow = mul(fastFlow, verticalStretchFactor)
       const fastNoise1 = mx_noise_float(
-        vec3(mul(uvCoords.x, fastFoamScaleX), mul(stretchedFastFlow, fastFoamScaleY), mul(time, 0.8))
+        vec3(mul(uvCoords.x, fastFoamScaleX), mul(stretchedFastFlow, fastFoamScaleY), mul(time, 0.8)),
       )
       const fastNoise2 = mx_noise_float(
         vec3(
           mul(uvCoords.x, mul(fastFoamScaleX, 1.3)),
           mul(stretchedFastFlow, mul(fastFoamScaleY, 1.25)),
-          mul(time, 0.6)
-        )
+          mul(time, 0.6),
+        ),
       )
 
       const layeredFast = add(mul(fastNoise1, 0.6), mul(fastNoise2, 0.4))

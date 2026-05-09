@@ -82,11 +82,11 @@ const createFullGrassGeometry = (options: {
   let bladeIndex = 0
 
   for (let i = 0; i < points.length; i++) {
-    const centerX = points[i]![0]!
-    const centerY = points[i]![1]!
-    const centerZ = points[i]![2]!
+    const point = points[i] as [number, number, number]
+    const normal = normals[i] as [number, number, number]
+    const [centerX, centerY, centerZ] = point
 
-    tmpTerrainNormal.set(normals[i]![0]!, normals[i]![1]!, normals[i]![2]!)
+    tmpTerrainNormal.set(normal[0], normal[1], normal[2])
 
     for (let j = 0; j < options.bladesPerPoint; j++) {
       const vertexOffset = bladeIndex * 9 // 3 vertices * 3 components
@@ -102,7 +102,7 @@ const createFullGrassGeometry = (options: {
 
       // Randomly select one of the pre-calculated color samples - cache the color object
       const colorSampleIndex = Math.floor(Math.random() * options.colorSamples)
-      const bladeColor = colorSamples[colorSampleIndex]!
+      const bladeColor = colorSamples[colorSampleIndex] as Color
       const bladeColorR = bladeColor.r
       const bladeColorG = bladeColor.g
       const bladeColorB = bladeColor.b
