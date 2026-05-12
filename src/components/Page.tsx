@@ -9,13 +9,13 @@ import { setStore, useStoreValue } from '@/lib/store'
 import PlaneScene from './PlaneScene'
 
 const Item = ({ href, children }: { href: string; children: ReactNode }) => (
-  <div className="relative group">
+  <div className="group relative">
     <Link href={href} className="text-sm">
       <li className="pl-2">{children}</li>
     </Link>
     <Link
       href={`https://github.com/verekia/tslfx/blob/main/src/pages${href}.tsx`}
-      className="absolute top-0 right-0 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      className="absolute right-0 top-0 text-xs opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       target="_blank"
     >
       <div className="flex items-center gap-1">
@@ -58,7 +58,7 @@ const Page = ({
         <title>{title ? `${title} | TSLFX` : 'TSLFX | TSL VFX Library'}</title>
       </Head>
       <div className={`h-screen ${dark ? 'bg-[#333]' : 'bg-[#f0f0f0]'}`}>
-        <div className="fixed top-3 left-3 z-50 flex flex-col gap-2 p-2 px-3 py-2 text-white rounded-md bg-black/50">
+        <div className="fixed left-3 top-3 z-50 flex flex-col gap-2 rounded-md bg-black/50 p-2 px-3 py-2 text-white">
           <header className="flex items-center gap-1">
             <Link href="/">
               <h1 className="text-2xl font-bold">✨ TSLFX ✨</h1>
@@ -122,7 +122,7 @@ const Page = ({
             <Leva titleBar={{ title, filter: false }} {...levaProps} />
           </>
         )}
-        <div className="fixed bottom-0 left-0 z-50 flex gap-3 p-2 [&>*]:bg-black [&>*]:rounded-md [&>*]:px-2 [&>*]:py-1 text-white">
+        <div className="fixed bottom-0 left-0 z-50 flex gap-3 p-2 text-white [&>*]:rounded-md [&>*]:bg-black [&>*]:px-2 [&>*]:py-1">
           <button onClick={() => setStore('dark', !dark)}>{dark ? 'Dark' : 'Light'} mode</button>
           {is2D && (
             <button onClick={() => setStore('boundsPlane', !boundsPlane)}>

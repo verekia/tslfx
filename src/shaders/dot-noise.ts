@@ -21,7 +21,7 @@ export const dotNoiseFn = (p: Node) => {
     +0.494042493,
     +0.096597072,
     +0.911518454,
-    +0.399753815
+    +0.399753815,
   )
   // Range [-3, 3]
   const result = dot(cos(GOLD.mul(p)), sin(GOLD.mul(p).mul(PHI)))

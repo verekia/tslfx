@@ -55,7 +55,7 @@ const ScatterMaterial = () => {
   const [{ vesicaColor, duration, time, autoplay, vesicaCount, radiusStart, radiusEnd }, setControls] = useControls(
     () => {
       const presets: Record<string, ButtonInput> = Object.fromEntries(
-        scatterPresets.map((preset) => [
+        scatterPresets.map(preset => [
           preset.name,
           button(() => {
             const { seed, aspect, ...rest } = preset.uniforms
@@ -71,7 +71,7 @@ const ScatterMaterial = () => {
               time: 0,
             })
           }),
-        ])
+        ]),
       )
 
       return {
@@ -100,7 +100,7 @@ const ScatterMaterial = () => {
         }),
         Presets: folder(presets),
       }
-    }
+    },
   )
 
   const { uniforms, nodes } = useMemo(() => scatter(), [])

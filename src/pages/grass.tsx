@@ -30,7 +30,7 @@ const Content = () => {
         // baseDarkness: 0.3,
         // clusterRadius: 0.4,
       }),
-    [grassGrid.geometry]
+    [grassGrid.geometry],
   )
 
   return (

@@ -6,7 +6,7 @@ const MyCanvas = ({ children }: { children: React.ReactNode }) => {
   return (
     <Canvas
       style={{ height: '100vh' }}
-      gl={async (glProps) => {
+      gl={async glProps => {
         // @ts-expect-error
         const renderer = new WebGPURenderer(glProps)
         await renderer.init()

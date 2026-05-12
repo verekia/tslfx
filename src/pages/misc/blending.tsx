@@ -16,7 +16,7 @@ const BlendingMaterial = () => {
         circleSizeStart: 0.7,
         circleSizeEnd: 0.5,
       }),
-    []
+    [],
   )
 
   const { uniforms: shapeUniforms, nodes: shapeNodes } = useMemo(() => shape({ endSize: 0.7 }), [])
@@ -29,7 +29,7 @@ const BlendingMaterial = () => {
         color1: new Vector4(0.1, 0.2, 0.7, 1),
         color2: new Vector4(0.1, 0.5, 1, 1),
       }),
-    []
+    [],
   )
 
   useFrame((_, delta) => {

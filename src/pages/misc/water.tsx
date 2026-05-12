@@ -27,7 +27,7 @@ const WaterMaterial = () => {
         color2: new Vector4(1, 1, 1, 1),
         octaves,
       }),
-    [octaves]
+    [octaves],
   )
 
   useEffect(() => {

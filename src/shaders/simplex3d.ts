@@ -1,18 +1,5 @@
 import { Vector4 } from 'three'
-import {
-  vec2,
-  vec3,
-  vec4,
-  dot,
-  abs,
-  max,
-  uniform,
-  float,
-  floor,
-  step,
-  min,
-  mix,
-} from 'three/tsl'
+import { vec2, vec3, vec4, dot, abs, max, uniform, float, floor, step, min, mix } from 'three/tsl'
 import { multiplyRgbByAlpha, taylorInvSqrt, uvCenter } from './util'
 import type { Node } from 'three/webgpu'
 
@@ -45,22 +32,22 @@ const snoise = (v: ReturnType<typeof vec3>) => {
     permute(
       permute(i.z.add(vec4(0, i1.z, i2.z, 1)))
         .add(i.y)
-        .add(vec4(0, i1.y, i2.y, 1))
+        .add(vec4(0, i1.y, i2.y, 1)),
     )
       .add(i.x)
-      .add(vec4(0, i1.x, i2.x, 1))
+      .add(vec4(0, i1.x, i2.x, 1)),
   )
 
-  const n_ = float(1 / 7)
-  const ns = n_.mul(D.wyz).sub(D.xzx)
+  const nVal = float(1 / 7)
+  const ns = nVal.mul(D.wyz).sub(D.xzx)
 
   const j = p.sub(float(49).mul(floor(p.mul(ns.z).mul(ns.z))))
 
-  const x_ = floor(j.mul(ns.z))
-  const y_ = floor(j.sub(float(7).mul(x_)))
+  const xVal = floor(j.mul(ns.z))
+  const yVal = floor(j.sub(float(7).mul(xVal)))
 
-  const x = x_.mul(ns.x).add(ns.yyyy)
-  const y = y_.mul(ns.x).add(ns.yyyy)
+  const x = xVal.mul(ns.x).add(ns.yyyy)
+  const y = yVal.mul(ns.x).add(ns.yyyy)
   const h = float(1).sub(abs(x)).sub(abs(y))
 
   const b0 = vec4(x.xy, y.xy)
@@ -132,8 +119,8 @@ export const simplexNoise3D = (params: SimplexNoise3DParams) => {
     grayscaleFloat = grayscaleFloat.add(
       amplitude.mul(
         // @ts-expect-error
-        getFloatValue(space.mul(frequency).sub(fbmStep.mul(i)), time)
-      )
+        getFloatValue(space.mul(frequency).sub(fbmStep.mul(i)), time),
+      ),
     )
   }
 

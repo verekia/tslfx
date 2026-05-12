@@ -55,7 +55,7 @@ const NewImpactMaterial = () => {
 
   const [controls, setControls] = useControls(() => {
     const presets: Record<string, ButtonInput> = Object.fromEntries(
-      newImpactPresets.map((preset) => [
+      newImpactPresets.map(preset => [
         preset.name,
         button(() => {
           const { seed, aspect, ...rest } = preset.uniforms
@@ -71,7 +71,7 @@ const NewImpactMaterial = () => {
             time: 0,
           })
         }),
-      ])
+      ]),
     )
 
     return {
@@ -107,7 +107,7 @@ const NewImpactMaterial = () => {
 
   const combinedColorNode = useMemo(
     () => pipe(blendAlpha, shapeShader.nodes.colorNode, scatterShader.nodes.colorNode),
-    [shapeShader, scatterShader]
+    [shapeShader, scatterShader],
   )
 
   useFrame((_, delta) => {
