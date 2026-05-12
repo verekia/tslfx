@@ -15,11 +15,10 @@ RUN bun run build
 
 # Production stage
 
-FROM nginx:1.26.2-alpine3.20-slim
+FROM verekia/nginx-brotli:1.30.0
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=builder /app/out /usr/share/nginx/html
 
 EXPOSE 80
-
