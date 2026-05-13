@@ -15,7 +15,7 @@ const Item = ({ href, children }: { href: string; children: ReactNode }) => (
     </Link>
     <Link
       href={`https://github.com/verekia/tslfx/blob/main/src/pages${href}.tsx`}
-      className="absolute right-0 top-0 text-xs opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      className="absolute top-0 right-0 text-xs opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       target="_blank"
     >
       <div className="flex items-center gap-1">
@@ -58,7 +58,7 @@ const Page = ({
         <title>{title ? `${title} | TSLFX` : 'TSLFX | TSL VFX Library'}</title>
       </Head>
       <div className={`h-screen ${dark ? 'bg-[#333]' : 'bg-[#f0f0f0]'}`}>
-        <div className="fixed left-3 top-3 z-50 flex flex-col gap-2 rounded-md bg-black/50 p-2 px-3 py-2 text-white">
+        <div className="fixed top-3 left-3 z-50 flex flex-col gap-2 rounded-md bg-black/50 p-2 px-3 py-2 text-white">
           <header className="flex items-center gap-1">
             <Link href="/">
               <h1 className="text-2xl font-bold">✨ TSLFX ✨</h1>

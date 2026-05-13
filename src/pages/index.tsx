@@ -13,7 +13,7 @@ const IndexPage = () => {
       </Head>
       <Page />
       <div
-        className={`fixed left-0 top-0 flex h-screen w-screen flex-col items-center justify-center gap-1 ${dark ? 'text-white' : 'text-black'}`}
+        className={`fixed top-0 left-0 flex h-screen w-screen flex-col items-center justify-center gap-1 ${dark ? 'text-white' : 'text-black'}`}
       >
         <h1 className="mb-3 text-center text-5xl font-bold">✨ TSLFX ✨</h1>
         <p className="text-center text-xl">

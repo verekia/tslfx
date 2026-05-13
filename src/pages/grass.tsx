@@ -1,11 +1,11 @@
 import Page from '@/components/Page'
 import { useGLTF } from '@react-three/drei'
 
-// @ts-expect-error
-import terrainSrc from '@/shaders/grass/terrain.glb'
 import { useMemo } from 'react'
 import { DoubleSide, Mesh } from 'three'
 import { grass } from '@/shaders/grass/grass'
+
+const terrainSrc = new URL('../shaders/grass/terrain.glb', import.meta.url).href
 
 type Nodes = {
   grass: Mesh

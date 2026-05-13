@@ -1,11 +1,11 @@
 import Page from '@/components/Page'
 import { useGLTF } from '@react-three/drei'
 
-// @ts-expect-error
-import terrainSrc from '@/shaders/waterfall/waterfall.glb'
 import { useMemo } from 'react'
 import { AdditiveBlending, Mesh } from 'three'
 import { waterfall } from '@/shaders/waterfall/waterfall'
+
+const terrainSrc = new URL('../shaders/waterfall/waterfall.glb', import.meta.url).href
 
 type Nodes = {
   FallStraight: Mesh

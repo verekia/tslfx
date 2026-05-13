@@ -14,6 +14,8 @@
     "declaration": true,
     "module": "preserve",
     "noEmit": true,
-    "lib": ["es2022"]
+    "lib": ["es2022"],
+    // tsup uses baseUrl
+    "ignoreDeprecations": "6.0"
   }
 }
